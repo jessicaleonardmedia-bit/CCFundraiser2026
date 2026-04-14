@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volunteer Dashboard — Conners Conners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #111110;
+    --white: #fafaf8;
+    --warm-gray: #e8e6e1;
+    --mid-gray: #b0ada6;
+    --light-gray: #f2f0eb;
+    --accent: #111110;
+    --pending: #b07d3a;
+    --pending-bg: #fdf3e3;
+    --sold-bg: #f0f0ee;
+    --available-bg: #edf5f0;
+    --sold: #888480;
+    --available: #2d6a4f;
+    --danger: #b03a3a;
+    --danger-bg: #fdf0f0;
+    --serif: 'EB Garamond', Georgia, serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--serif);
+    background: var(--light-gray);
+    color: var(--black);
+    min-height: 100vh;
+  }
+
+  /* LOGIN */
+  .login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .login-box {
+    background: var(--white);
+    border: 1px solid var(--warm-gray);
+    padding: 48px 40px;
+    max-width: 360px;
+    width: 100%;
+  }
+
+  .login-box h1 {
+    font-size: 22px;
+    font-weight: 400;
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+
+  .login-box p {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--mid-gray);
+    margin-bottom: 28px;
+    letter-spacing: 0.04em;
+  }
+
+  .login-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .login-group label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mid-gray);
+  }
+
+  .login-group input {
+    border: 1px solid var(--warm-gray);
+    padding: 11px 14px;
+    font-family: var(--serif);
+    font-size: 16px;
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .login-group input:focus { border-color: var(--black); }
+
+  .login-error {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--danger);
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  /* DASHBOARD */
+  .dashboard { display: none; }
+  .dashboard.open { display: block; }
+
+  header {
+    background: var(--black);
+    color: var(--white);
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .logo {
+    font-family: var(--serif);
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  .header-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.15);
+    padding: 3px 8px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-sm {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: transparent;
+    color: var(--white);
+    transition: all 0.15s;
+  }
+  .btn-sm:hover { background: rgba(255,255,255,0.1); }
+
+  .btn-sm-danger {
+    border-color: rgba(180,60,60,0.5);
+    color: #f08080;
+  }
+  .btn-sm-danger:hover { background: rgba(180,60,60,0.15); }
+
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--warm-gray);
+    padding: 0 32px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  .stat {
+    padding: 16px 28px 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 100px;
+    border-right: 1px solid var(--warm-gray);
+    margin-right: 28px;
+  }
+
+  .stat:last-child { border-right: none; }
+
+  .stat-value {
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--mid-gray);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* CONTROLS */
+  .controls {
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: var(--light-gray);
+    border-bottom: 1px solid var(--warm-gray);
+  }
+
+  .search-input {
+    border: 1px solid var(--warm-gray);
+    background: var(--white);
+    padding: 9px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    min-width: 220px;
+  }
+  .search-input:focus { border-color: var(--black); }
+
+  .filter-select {
+    border: 1px solid var(--warm-gray);
+    background: var(--white);
+    padding: 9px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    outline: none;
+    cursor: pointer;
+    color: var(--black);
+  }
+
+  .close-all-btn {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 9px 18px;
+    border: 1px solid var(--danger);
+    background: transparent;
+    color: var(--danger);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .close-all-btn:hover { background: var(--danger-bg); }
+
+  /* WORK LIST */
+  .work-list {
+    padding: 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .work-row {
+    background: var(--white);
+    border: 1px solid var(--warm-gray);
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+
+  .work-row:hover { border-color: var(--mid-gray); }
+  .work-row.status-pending { border-left: 3px solid var(--pending); }
+  .work-row.status-sold { border-left: 3px solid var(--sold); opacity: 0.7; }
+  .work-row.status-available { border-left: 3px solid var(--available); }
+
+  .work-row-header {
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .work-row-info { min-width: 0; }
+
+  .work-row-artist {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mid-gray);
+    margin-bottom: 2px;
+  }
+
+  .work-row-title {
+    font-size: 17px;
+    font-style: italic;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .work-row-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--mid-gray);
+  }
+
+  .work-row-price {
+    font-family: var(--mono);
+    font-size: 14px;
+    white-space: nowrap;
+    color: var(--black);
+  }
+
+  .work-row-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+  }
+
+  .badge-available { color: var(--available); }
+  .badge-pending { color: var(--pending); }
+  .badge-sold { color: var(--sold); }
+
+  .queue-count {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: var(--pending-bg);
+    color: var(--pending);
+    border: 1px solid var(--pending);
+    padding: 2px 7px;
+    white-space: nowrap;
+  }
+
+  .chevron {
+    font-size: 12px;
+    color: var(--mid-gray);
+    transition: transform 0.2s;
+    user-select: none;
+  }
+  .work-row.expanded .chevron { transform: rotate(180deg); }
+
+  /* EXPANDED SECTION */
+  .work-row-detail {
+    display: none;
+    border-top: 1px solid var(--warm-gray);
+    background: var(--light-gray);
+  }
+
+  .work-row.expanded .work-row-detail { display: block; }
+
+  .detail-inner {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .queue-section h4 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mid-gray);
+    margin-bottom: 10px;
+  }
+
+  .queue-empty {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--mid-gray);
+    font-style: italic;
+  }
+
+  .queue-item {
+    background: var(--white);
+    border: 1px solid var(--warm-gray);
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: start;
+    margin-bottom: 8px;
+  }
+
+  .queue-position {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--mid-gray);
+    width: 20px;
+    text-align: center;
+    padding-top: 2px;
+  }
+
+  .queue-position.first {
+    color: var(--pending);
+    font-weight: 500;
+  }
+
+  .queue-buyer-name {
+    font-size: 16px;
+    font-style: italic;
+    margin-bottom: 3px;
+  }
+
+  .queue-buyer-contact {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--mid-gray);
+    line-height: 1.7;
+  }
+
+  .queue-buyer-type {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border: 1px solid var(--warm-gray);
+    color: var(--mid-gray);
+    white-space: nowrap;
+    align-self: start;
+  }
+
+  .queue-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .action-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border: 1px solid var(--warm-gray);
+    background: var(--white);
+    cursor: pointer;
+    color: var(--black);
+    transition: all 0.15s;
+  }
+
+  .action-btn:hover { background: var(--light-gray); }
+
+  .action-btn-confirm {
+    border-color: var(--available);
+    color: var(--available);
+  }
+  .action-btn-confirm:hover { background: var(--available-bg); }
+
+  .action-btn-expire {
+    border-color: var(--pending);
+    color: var(--pending);
+  }
+  .action-btn-expire:hover { background: var(--pending-bg); }
+
+  .action-btn-close {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+  .action-btn-close:hover { background: var(--danger-bg); }
+
+  .mark-sold-btn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border: 1px solid var(--sold);
+    background: transparent;
+    color: var(--sold);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .mark-sold-btn:hover { background: var(--sold-bg); }
+
+  /* CONFIRM MODAL */
+  .confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(17,17,16,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .confirm-overlay.open { display: flex; }
+
+  .confirm-box {
+    background: var(--white);
+    border: 1px solid var(--warm-gray);
+    padding: 36px 32px;
+    max-width: 400px;
+    width: 100%;
+  }
+
+  .confirm-box h3 {
+    font-size: 20px;
+    font-weight: 400;
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+
+  .confirm-box p {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--mid-gray);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .confirm-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-full {
+    flex: 1;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-confirm-yes {
+    background: var(--black);
+    color: var(--white);
+    border-color: var(--black);
+  }
+  .btn-confirm-yes:hover { background: #333; }
+
+  .btn-confirm-no {
+    background: transparent;
+    color: var(--black);
+    border-color: var(--warm-gray);
+  }
+  .btn-confirm-no:hover { background: var(--light-gray); }
+
+  .last-updated {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--mid-gray);
+    padding: 12px 32px;
+    border-top: 1px solid var(--warm-gray);
+    background: var(--white);
+    position: sticky;
+    bottom: 0;
+  }
+
+  .btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    border: 1px solid var(--black);
+    background: var(--black);
+    color: var(--white);
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: #333; }
+
+  .refresh-indicator {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    background: var(--available);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 0 16px; }
+    .stats-bar { padding: 0 16px; }
+    .controls { padding: 16px; }
+    .work-list { padding: 16px; }
+    .work-row-header { grid-template-columns: 1fr auto; }
+    .work-row-price { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <h1>Volunteer access</h1>
+    <p>Conners Conners — Fundraiser dashboard</p>
+    <div class="login-group">
+      <label>Password</label>
+      <input type="password" id="password-input" placeholder="Enter volunteer password"
+             onkeydown="if(event.key==='Enter') attemptLogin()">
+    </div>
+    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
+    <button class="btn" onclick="attemptLogin()">Sign in</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <header>
+    <div class="header-left">
+      <span class="logo">Conners Conners</span>
+      <span class="header-badge">Volunteer</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-sm" onclick="loadWorks()">↻ Refresh</button>
+      <button class="btn-sm btn-sm-danger" onclick="confirmCloseAll()">Close all sales</button>
+      <button class="btn-sm" onclick="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat"><span class="stat-value" id="stat-total">—</span><span class="stat-label">Total works</span></div>
+    <div class="stat"><span class="stat-value" id="stat-available" style="color:var(--available)">—</span><span class="stat-label">Available</span></div>
+    <div class="stat"><span class="stat-value" id="stat-pending" style="color:var(--pending)">—</span><span class="stat-label">Pending</span></div>
+    <div class="stat"><span class="stat-value" id="stat-sold" style="color:var(--sold)">—</span><span class="stat-label">Sold</span></div>
+    <div class="stat"><span class="stat-value" id="stat-revenue">—</span><span class="stat-label">Revenue</span></div>
+  </div>
+
+  <div class="controls">
+    <input class="search-input" id="search-input" type="search" placeholder="Search artist or title…" oninput="renderList()">
+    <select class="filter-select" id="filter-select" onchange="renderList()">
+      <option value="all">All works</option>
+      <option value="available">Available</option>
+      <option value="pending">Pending</option>
+      <option value="sold">Sold</option>
+    </select>
+    <button class="close-all-btn" onclick="confirmCloseAll()">⚠ Close all sales</button>
+  </div>
+
+  <div class="work-list" id="work-list">
+    <p style="font-family:var(--mono);font-size:12px;color:var(--mid-gray);padding:20px 0">Loading works…</p>
+  </div>
+
+  <div class="last-updated">
+    <span class="refresh-indicator"></span>
+    <span id="last-updated-text">Auto-refreshes every 30 seconds</span>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <h3 id="confirm-title">Confirm action</h3>
+    <p id="confirm-body">Are you sure?</p>
+    <div class="confirm-actions">
+      <button class="btn-full btn-confirm-yes" id="confirm-yes">Confirm</button>
+      <button class="btn-full btn-confirm-no" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+// CONFIGURATION
+// =====================================================================
+const CONFIG = {
+  SHEET_API_URL: 'YOUR_APPS_SCRIPT_URL_HERE',
+  VOLUNTEER_PASSWORD: 'ccvolunteer2025', // Change this before the event
+  AUTO_REFRESH_SECONDS: 30,
+};
+
+// =====================================================================
+// STATE
+// =====================================================================
+let allWorks = [];
+let refreshTimer = null;
+let pendingAction = null;
+
+// =====================================================================
+// AUTH
+// =====================================================================
+function attemptLogin() {
+  const pwd = document.getElementById('password-input').value;
+  if (pwd === CONFIG.VOLUNTEER_PASSWORD) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').classList.add('open');
+    loadWorks();
+    startAutoRefresh();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('password-input').value = '';
+    document.getElementById('password-input').focus();
+  }
+}
+
+function logout() {
+  clearInterval(refreshTimer);
+  document.getElementById('dashboard').classList.remove('open');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('password-input').value = '';
+}
+
+// =====================================================================
+// DATA
+// =====================================================================
+async function loadWorks() {
+  if (CONFIG.SHEET_API_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    // Demo mode
+    if (allWorks.length === 0) allWorks = getDemoWorks();
+    renderList();
+    updateStats();
+    updateTimestamp();
+    return;
+  }
+
+  try {
+    const res = await fetch(CONFIG.SHEET_API_URL + '?action=getWorksAdmin&pwd=' + encodeURIComponent(CONFIG.VOLUNTEER_PASSWORD));
+    const data = await res.json();
+    if (data.works) {
+      allWorks = data.works;
+      renderList();
+      updateStats();
+      updateTimestamp();
+    }
+  } catch (e) {
+    console.error('Refresh failed', e);
+  }
+}
+
+async function sendAction(payload) {
+  if (CONFIG.SHEET_API_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
+    // Demo mode — apply locally
+    applyDemoAction(payload);
+    renderList();
+    updateStats();
+    return { success: true };
+  }
+
+  const res = await fetch(CONFIG.SHEET_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...payload, pwd: CONFIG.VOLUNTEER_PASSWORD }),
+  });
+  const data = await res.json();
+  if (data.works) {
+    allWorks = data.works;
+    renderList();
+    updateStats();
+  }
+  return data;
+}
+
+function applyDemoAction(payload) {
+  const work = allWorks.find(w => w.id === payload.workId);
+  if (!work) return;
+  if (payload.action === 'confirmSold') {
+    work.status = 'sold';
+    work.queue = [];
+  } else if (payload.action === 'expireFirst') {
+    if (work.queue && work.queue.length > 0) {
+      work.queue.shift();
+      work.status = work.queue.length > 0 ? 'pending' : 'available';
+    }
+  } else if (payload.action === 'closeWork') {
+    work.status = 'sold';
+    work.queue = [];
+  } else if (payload.action === 'closeAll') {
+    allWorks.forEach(w => { if (w.status !== 'sold') w.status = 'sold'; w.queue = []; });
+  }
+}
+
+// =====================================================================
+// RENDER
+// =====================================================================
+function renderList() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const filter = document.getElementById('filter-select').value;
+
+  let works = allWorks.filter(w => {
+    const matchFilter = filter === 'all' || w.status === filter;
+    const matchSearch = !search ||
+      w.artist.toLowerCase().includes(search) ||
+      w.title.toLowerCase().includes(search);
+    return matchFilter && matchSearch;
+  });
+
+  // Sort: pending first, then available, then sold; within pending sort by queue length desc
+  works.sort((a, b) => {
+    const order = { pending: 0, available: 1, sold: 2 };
+    if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
+    return (b.queue?.length || 0) - (a.queue?.length || 0);
+  });
+
+  const list = document.getElementById('work-list');
+  if (works.length === 0) {
+    list.innerHTML = '<p style="font-family:var(--mono);font-size:12px;color:var(--mid-gray);padding:20px 0">No works match.</p>';
+    return;
+  }
+
+  list.innerHTML = works.map(w => renderWorkRow(w)).join('');
+}
+
+function renderWorkRow(w) {
+  const qLen = w.queue?.length || 0;
+  const queueCountHtml = qLen > 0
+    ? `<span class="queue-count">${qLen} in queue</span>`
+    : '';
+
+  const queueHtml = qLen === 0
+    ? `<p class="queue-empty">No commitments yet.</p>`
+    : w.queue.map((buyer, i) => `
+        <div class="queue-item">
+          <div class="queue-position ${i === 0 ? 'first' : ''}">${i + 1}</div>
+          <div>
+            <div class="queue-buyer-name">${escHtml(buyer.name)}</div>
+            <div class="queue-buyer-contact">
+              ${escHtml(buyer.email)}<br>
+              ${escHtml(buyer.phone)}${buyer.timestamp ? '<br>' + formatTime(buyer.timestamp) : ''}
+            </div>
+            ${i === 0 ? `
+            <div class="queue-actions">
+              <button class="action-btn action-btn-confirm" onclick="confirmAction('confirmSold','${w.id}','Mark as sold to ${escAttr(buyer.name)}?','This will mark the work as sold and clear the queue.')">✓ Confirm sold</button>
+              <button class="action-btn action-btn-expire" onclick="confirmAction('expireFirst','${w.id}','Expire this commitment?','${escAttr(buyer.name)} will be removed and the next person in the queue will become first.')">Expire commitment</button>
+            </div>` : ''}
+          </div>
+          <span class="queue-buyer-type">${buyer.paymentType === 'transfer' ? 'Transfer' : 'At desk'}</span>
+        </div>
+      `).join('');
+
+  const actionsHtml = w.status !== 'sold'
+    ? `<button class="mark-sold-btn" onclick="confirmAction('closeWork','${w.id}','Close sales for this work?','This will mark the work as sold. Use this for works paid at the Square terminal on the night.')">Mark as sold</button>`
+    : '';
+
+  return `
+    <div class="work-row status-${w.status}" id="row-${w.id}">
+      <div class="work-row-header" onclick="toggleRow('${w.id}')">
+        <div class="work-row-info">
+          <div class="work-row-artist">${escHtml(w.artist)}</div>
+          <div class="work-row-title">${escHtml(w.title)}</div>
+          <div class="work-row-meta">${w.medium || ''}${w.medium && w.dimensions ? ' · ' : ''}${w.dimensions || ''}</div>
+        </div>
+        <div class="work-row-price">$${Number(w.price).toLocaleString()}</div>
+        <div class="work-row-status">
+          <span class="status-badge badge-${w.status}">${statusLabel(w.status)}</span>
+          ${queueCountHtml}
+          <span class="chevron">▾</span>
+        </div>
+      </div>
+      <div class="work-row-detail">
+        <div class="detail-inner">
+          <div class="queue-section">
+            <h4>Purchase queue</h4>
+            ${queueHtml}
+          </div>
+          ${actionsHtml}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleRow(id) {
+  const row = document.getElementById('row-' + id);
+  if (row) row.classList.toggle('expanded');
+}
+
+// =====================================================================
+// STATS
+// =====================================================================
+function updateStats() {
+  const total = allWorks.length;
+  const available = allWorks.filter(w => w.status === 'available').length;
+  const pending = allWorks.filter(w => w.status === 'pending').length;
+  const sold = allWorks.filter(w => w.status === 'sold').length;
+  const revenue = allWorks
+    .filter(w => w.status === 'sold')
+    .reduce((sum, w) => sum + Number(w.price), 0);
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-available').textContent = available;
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-sold').textContent = sold;
+  document.getElementById('stat-revenue').textContent = revenue > 0
+    ? '$' + revenue.toLocaleString()
+    : '—';
+}
+
+function updateTimestamp() {
+  const now = new Date();
+  document.getElementById('last-updated-text').textContent =
+    'Last updated ' + now.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
+// =====================================================================
+// CONFIRM ACTIONS
+// =====================================================================
+function confirmAction(action, workId, title, body) {
+  pendingAction = { action, workId };
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-body').textContent = body;
+  document.getElementById('confirm-overlay').classList.add('open');
+  document.getElementById('confirm-yes').onclick = executePendingAction;
+}
+
+function confirmCloseAll() {
+  pendingAction = { action: 'closeAll' };
+  document.getElementById('confirm-title').textContent = 'Close all sales?';
+  document.getElementById('confirm-body').textContent = 'This will mark ALL remaining works as sold and clear all queues. This cannot be undone.';
+  document.getElementById('confirm-overlay').classList.add('open');
+  document.getElementById('confirm-yes').onclick = executePendingAction;
+}
+
+async function executePendingAction() {
+  closeConfirm();
+  if (!pendingAction) return;
+  await sendAction(pendingAction);
+  pendingAction = null;
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeConfirm();
+});
+
+// =====================================================================
+// AUTO REFRESH
+// =====================================================================
+function startAutoRefresh() {
+  refreshTimer = setInterval(() => {
+    loadWorks();
+  }, CONFIG.AUTO_REFRESH_SECONDS * 1000);
+}
+
+// =====================================================================
+// HELPERS
+// =====================================================================
+function statusLabel(s) {
+  return s === 'available' ? 'Available' : s === 'pending' ? 'Pending' : 'Sold';
+}
+
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function escAttr(str) {
+  return String(str || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
+function formatTime(ts) {
+  try {
+    return new Date(ts).toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' });
+  } catch { return ''; }
+}
+
+// =====================================================================
+// DEMO DATA
+// =====================================================================
+function getDemoWorks() {
+  return [
+    {
+      id: 'w001', artist: 'Rose Nolan', title: 'Untitled (Study No. 4)',
+      medium: 'Acrylic on canvas', dimensions: '120 × 90 cm', year: '2024',
+      price: 1800, status: 'available', imageUrl: '', queue: []
+    },
+    {
+      id: 'w002', artist: 'Jordan Halsall', title: 'Passage',
+      medium: 'Oil on linen', dimensions: '80 × 60 cm', year: '2024',
+      price: 2400, status: 'available', imageUrl: '', queue: []
+    },
+    {
+      id: 'w003', artist: 'David Keating', title: 'Interior with Figures',
+      medium: 'Gouache on paper', dimensions: '42 × 59 cm', year: '2023',
+      price: 950, status: 'pending', imageUrl: '',
+      queue: [
+        { name: 'Samira O\'Brien', email: 'samira@example.com', phone: '0412 345 678', paymentType: 'transfer', timestamp: new Date(Date.now() - 20*60000).toISOString() },
+        { name: 'Lee Marchetti', email: 'lee@example.com', phone: '0423 456 789', paymentType: 'desk', timestamp: new Date(Date.now() - 8*60000).toISOString() },
+      ]
+    },
+    {
+      id: 'w004', artist: 'Angela Brennan', title: 'Yellow Form',
+      medium: 'Oil on board', dimensions: '60 × 50 cm', year: '2024',
+      price: 3200, status: 'available', imageUrl: '', queue: []
+    },
+    {
+      id: 'w005', artist: 'Camille Perry', title: 'Soft Architecture',
+      medium: 'Watercolour on paper', dimensions: '30 × 40 cm', year: '2024',
+      price: 680, status: 'sold', imageUrl: '', queue: []
+    },
+    {
+      id: 'w006', artist: 'Jackson McLaren', title: 'Still',
+      medium: 'Acrylic on canvas', dimensions: '100 × 80 cm', year: '2024',
+      price: 1600, status: 'pending', imageUrl: '',
+      queue: [
+        { name: 'Priya Desai', email: 'priya@example.com', phone: '0498 765 432', paymentType: 'transfer', timestamp: new Date(Date.now() - 5*60000).toISOString() },
+      ]
+    },
+  ];
+}
+</script>
+</body>
+</html>
