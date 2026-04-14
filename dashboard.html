@@ -4,606 +4,132 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Volunteer Dashboard — Conners Conners</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --black: #111110;
-    --white: #fafaf8;
-    --warm-gray: #e8e6e1;
-    --mid-gray: #b0ada6;
-    --light-gray: #f2f0eb;
-    --accent: #111110;
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --off-white: #f8f8f8;
+    --light-gray: #eeeeee;
+    --mid-gray: #999999;
+    --border: #e0e0e0;
     --pending: #b07d3a;
     --pending-bg: #fdf3e3;
-    --sold-bg: #f0f0ee;
-    --available-bg: #edf5f0;
-    --sold: #888480;
     --available: #2d6a4f;
+    --available-bg: #edf5f0;
+    --sold: #999999;
     --danger: #b03a3a;
     --danger-bg: #fdf0f0;
-    --serif: 'EB Garamond', Georgia, serif;
-    --mono: 'DM Mono', monospace;
+    --font: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
-
-  body {
-    font-family: var(--serif);
-    background: var(--light-gray);
-    color: var(--black);
-    min-height: 100vh;
-  }
+  html, body { font-family: var(--font); background: var(--off-white); color: var(--black); font-size: 14px; min-height: 100vh; }
 
   /* LOGIN */
-  .login-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
-  .login-box {
-    background: var(--white);
-    border: 1px solid var(--warm-gray);
-    padding: 48px 40px;
-    max-width: 360px;
-    width: 100%;
-  }
-
-  .login-box h1 {
-    font-size: 22px;
-    font-weight: 400;
-    font-style: italic;
-    margin-bottom: 8px;
-  }
-
-  .login-box p {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--mid-gray);
-    margin-bottom: 28px;
-    letter-spacing: 0.04em;
-  }
-
-  .login-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-
-  .login-group label {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--mid-gray);
-  }
-
-  .login-group input {
-    border: 1px solid var(--warm-gray);
-    padding: 11px 14px;
-    font-family: var(--serif);
-    font-size: 16px;
-    background: var(--white);
-    outline: none;
-    transition: border-color 0.15s;
-  }
-
-  .login-group input:focus { border-color: var(--black); }
-
-  .login-error {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--danger);
-    margin-bottom: 12px;
-    display: none;
-  }
+  .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: var(--white); }
+  .login-box { max-width: 340px; width: 100%; }
+  .login-box h1 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .login-box .sub { font-size: 12px; color: var(--mid-gray); margin-bottom: 24px; }
+  .field-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); display: block; margin-bottom: 5px; }
+  .field-input { border: 1px solid var(--border); padding: 10px 12px; font-family: var(--font); font-size: 14px; background: var(--white); color: var(--black); outline: none; width: 100%; transition: border-color 0.1s; border-radius: 0; -webkit-appearance: none; }
+  .field-input:focus { border-color: var(--black); }
+  .login-error { font-size: 12px; color: var(--danger); margin: 8px 0; display: none; }
+  .btn { display: block; width: 100%; padding: 11px 16px; font-family: var(--font); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--black); background: var(--black); color: var(--white); text-align: center; margin-top: 12px; transition: background 0.1s; }
+  .btn:hover { background: #333; }
+  .btn-outline { background: transparent; color: var(--black); }
+  .btn-outline:hover { background: var(--off-white); }
+  .btn-sm { font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 12px; border: 1px solid; cursor: pointer; transition: all 0.1s; background: transparent; }
 
   /* DASHBOARD */
   .dashboard { display: none; }
   .dashboard.open { display: block; }
 
-  header {
-    background: var(--black);
-    color: var(--white);
-    padding: 0 32px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
+  header { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 24px; height: 48px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { font-size: 14px; font-weight: 700; color: var(--black); }
+  .header-tag { font-size: 11px; color: var(--mid-gray); margin-left: 10px; }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .btn-sm-default { border-color: var(--border); color: var(--black); }
+  .btn-sm-default:hover { border-color: var(--black); }
+  .btn-sm-danger { border-color: var(--danger); color: var(--danger); }
+  .btn-sm-danger:hover { background: var(--danger-bg); }
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .logo {
-    font-family: var(--serif);
-    font-size: 14px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--white);
-  }
-
-  .header-badge {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    background: rgba(255,255,255,0.15);
-    padding: 3px 8px;
-    color: rgba(255,255,255,0.7);
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .btn-sm {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 6px 14px;
-    cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.3);
-    background: transparent;
-    color: var(--white);
-    transition: all 0.15s;
-  }
-  .btn-sm:hover { background: rgba(255,255,255,0.1); }
-
-  .btn-sm-danger {
-    border-color: rgba(180,60,60,0.5);
-    color: #f08080;
-  }
-  .btn-sm-danger:hover { background: rgba(180,60,60,0.15); }
-
-  /* STATS BAR */
-  .stats-bar {
-    background: var(--white);
-    border-bottom: 1px solid var(--warm-gray);
-    padding: 0 32px;
-    display: flex;
-    gap: 0;
-    overflow-x: auto;
-  }
-
-  .stat {
-    padding: 16px 28px 16px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 100px;
-    border-right: 1px solid var(--warm-gray);
-    margin-right: 28px;
-  }
-
+  /* STATS */
+  .stats-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; overflow-x: auto; }
+  .stat { padding: 14px 24px 14px 0; display: flex; flex-direction: column; gap: 2px; min-width: 80px; border-right: 1px solid var(--border); margin-right: 24px; }
   .stat:last-child { border-right: none; }
-
-  .stat-value {
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 1;
-  }
-
-  .stat-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--mid-gray);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
+  .stat-value { font-size: 26px; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--mid-gray); text-transform: uppercase; letter-spacing: 0.06em; }
 
   /* CONTROLS */
-  .controls {
-    padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    background: var(--light-gray);
-    border-bottom: 1px solid var(--warm-gray);
-  }
-
-  .search-input {
-    border: 1px solid var(--warm-gray);
-    background: var(--white);
-    padding: 9px 14px;
-    font-family: var(--mono);
-    font-size: 12px;
-    outline: none;
-    transition: border-color 0.15s;
-    min-width: 220px;
-  }
+  .controls { padding: 16px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--off-white); border-bottom: 1px solid var(--border); }
+  .search-input { border: 1px solid var(--border); background: var(--white); padding: 8px 12px; font-family: var(--font); font-size: 12px; outline: none; transition: border-color 0.1s; min-width: 200px; border-radius: 0; }
   .search-input:focus { border-color: var(--black); }
-
-  .filter-select {
-    border: 1px solid var(--warm-gray);
-    background: var(--white);
-    padding: 9px 14px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    outline: none;
-    cursor: pointer;
-    color: var(--black);
-  }
-
-  .close-all-btn {
-    margin-left: auto;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 9px 18px;
-    border: 1px solid var(--danger);
-    background: transparent;
-    color: var(--danger);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
+  .filter-select { border: 1px solid var(--border); background: var(--white); padding: 8px 12px; font-family: var(--font); font-size: 12px; outline: none; cursor: pointer; color: var(--black); border-radius: 0; -webkit-appearance: none; }
+  .close-all-btn { margin-left: auto; font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--danger); background: transparent; color: var(--danger); cursor: pointer; transition: all 0.1s; }
   .close-all-btn:hover { background: var(--danger-bg); }
 
   /* WORK LIST */
-  .work-list {
-    padding: 24px 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .work-row {
-    background: var(--white);
-    border: 1px solid var(--warm-gray);
-    overflow: hidden;
-    transition: border-color 0.15s;
-  }
-
-  .work-row:hover { border-color: var(--mid-gray); }
+  .work-list { padding: 20px 24px; display: flex; flex-direction: column; gap: 10px; }
+  .work-row { background: var(--white); border: 1px solid var(--border); overflow: hidden; }
   .work-row.status-pending { border-left: 3px solid var(--pending); }
-  .work-row.status-sold { border-left: 3px solid var(--sold); opacity: 0.7; }
-  .work-row.status-available { border-left: 3px solid var(--available); }
-
-  .work-row-header {
-    padding: 16px 20px;
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
-    gap: 16px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .work-row-info { min-width: 0; }
-
-  .work-row-artist {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--mid-gray);
-    margin-bottom: 2px;
-  }
-
-  .work-row-title {
-    font-size: 17px;
-    font-style: italic;
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .work-row-meta {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--mid-gray);
-  }
-
-  .work-row-price {
-    font-family: var(--mono);
-    font-size: 14px;
-    white-space: nowrap;
-    color: var(--black);
-  }
-
-  .work-row-status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .status-badge {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border: 1px solid currentColor;
-    white-space: nowrap;
-  }
-
-  .badge-available { color: var(--available); }
+  .work-row.status-sold { border-left: 3px solid var(--mid-gray); opacity: 0.6; }
+  .work-row.status-available { border-left: 3px solid var(--black); }
+  .work-row-header { padding: 14px 18px; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 14px; cursor: pointer; user-select: none; }
+  .work-row-artist { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mid-gray); margin-bottom: 2px; }
+  .work-row-title { font-size: 14px; font-weight: 700; }
+  .work-row-meta { font-size: 11px; color: var(--mid-gray); margin-top: 2px; }
+  .work-row-price { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .work-row-badges { display: flex; align-items: center; gap: 8px; }
+  .status-badge { font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border: 1px solid currentColor; white-space: nowrap; }
+  .badge-available { color: var(--black); }
   .badge-pending { color: var(--pending); }
   .badge-sold { color: var(--sold); }
-
-  .queue-count {
-    font-family: var(--mono);
-    font-size: 10px;
-    background: var(--pending-bg);
-    color: var(--pending);
-    border: 1px solid var(--pending);
-    padding: 2px 7px;
-    white-space: nowrap;
-  }
-
-  .chevron {
-    font-size: 12px;
-    color: var(--mid-gray);
-    transition: transform 0.2s;
-    user-select: none;
-  }
+  .queue-count { font-size: 10px; background: var(--pending-bg); color: var(--pending); border: 1px solid var(--pending); padding: 2px 7px; white-space: nowrap; }
+  .chevron { font-size: 11px; color: var(--mid-gray); transition: transform 0.2s; }
   .work-row.expanded .chevron { transform: rotate(180deg); }
 
-  /* EXPANDED SECTION */
-  .work-row-detail {
-    display: none;
-    border-top: 1px solid var(--warm-gray);
-    background: var(--light-gray);
-  }
-
+  .work-row-detail { display: none; border-top: 1px solid var(--border); background: var(--off-white); }
   .work-row.expanded .work-row-detail { display: block; }
+  .detail-inner { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
 
-  .detail-inner {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .queue-section h4 {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--mid-gray);
-    margin-bottom: 10px;
-  }
-
-  .queue-empty {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--mid-gray);
-    font-style: italic;
-  }
-
-  .queue-item {
-    background: var(--white);
-    border: 1px solid var(--warm-gray);
-    padding: 14px 16px;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 14px;
-    align-items: start;
-    margin-bottom: 8px;
-  }
-
-  .queue-position {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--mid-gray);
-    width: 20px;
-    text-align: center;
-    padding-top: 2px;
-  }
-
-  .queue-position.first {
-    color: var(--pending);
-    font-weight: 500;
-  }
-
-  .queue-buyer-name {
-    font-size: 16px;
-    font-style: italic;
-    margin-bottom: 3px;
-  }
-
-  .queue-buyer-contact {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--mid-gray);
-    line-height: 1.7;
-  }
-
-  .queue-buyer-type {
-    font-family: var(--mono);
-    font-size: 10px;
-    padding: 2px 7px;
-    border: 1px solid var(--warm-gray);
-    color: var(--mid-gray);
-    white-space: nowrap;
-    align-self: start;
-  }
-
-  .queue-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .action-btn {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    padding: 6px 12px;
-    border: 1px solid var(--warm-gray);
-    background: var(--white);
-    cursor: pointer;
-    color: var(--black);
-    transition: all 0.15s;
-  }
-
-  .action-btn:hover { background: var(--light-gray); }
-
-  .action-btn-confirm {
-    border-color: var(--available);
-    color: var(--available);
-  }
+  .queue-section h4 { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 10px; }
+  .queue-empty { font-size: 12px; color: var(--mid-gray); }
+  .queue-item { background: var(--white); border: 1px solid var(--border); padding: 12px 14px; display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: start; margin-bottom: 8px; }
+  .queue-position { font-size: 11px; color: var(--mid-gray); text-align: center; padding-top: 2px; font-weight: 700; }
+  .queue-position.first { color: var(--pending); }
+  .queue-buyer-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .queue-buyer-contact { font-size: 11px; color: var(--mid-gray); line-height: 1.7; }
+  .queue-buyer-type { font-size: 10px; padding: 2px 7px; border: 1px solid var(--border); color: var(--mid-gray); white-space: nowrap; align-self: start; text-transform: uppercase; letter-spacing: 0.04em; }
+  .queue-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .action-btn { font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 5px 10px; border: 1px solid; background: var(--white); cursor: pointer; transition: all 0.1s; }
+  .action-btn-confirm { border-color: var(--available); color: var(--available); }
   .action-btn-confirm:hover { background: var(--available-bg); }
-
-  .action-btn-expire {
-    border-color: var(--pending);
-    color: var(--pending);
-  }
+  .action-btn-expire { border-color: var(--pending); color: var(--pending); }
   .action-btn-expire:hover { background: var(--pending-bg); }
-
-  .action-btn-close {
-    border-color: var(--danger);
-    color: var(--danger);
-  }
-  .action-btn-close:hover { background: var(--danger-bg); }
-
-  .mark-sold-btn {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 7px 14px;
-    border: 1px solid var(--sold);
-    background: transparent;
-    color: var(--sold);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .mark-sold-btn:hover { background: var(--sold-bg); }
+  .mark-sold-btn { font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 7px 12px; border: 1px solid var(--mid-gray); background: transparent; color: var(--mid-gray); cursor: pointer; transition: all 0.1s; }
+  .mark-sold-btn:hover { background: var(--light-gray); }
 
   /* CONFIRM MODAL */
-  .confirm-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(17,17,16,0.5);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
+  .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
   .confirm-overlay.open { display: flex; }
-
-  .confirm-box {
-    background: var(--white);
-    border: 1px solid var(--warm-gray);
-    padding: 36px 32px;
-    max-width: 400px;
-    width: 100%;
-  }
-
-  .confirm-box h3 {
-    font-size: 20px;
-    font-weight: 400;
-    font-style: italic;
-    margin-bottom: 10px;
-  }
-
-  .confirm-box p {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--mid-gray);
-    line-height: 1.7;
-    margin-bottom: 24px;
-  }
-
-  .confirm-actions {
-    display: flex;
-    gap: 10px;
-  }
-
-  .btn-full {
-    flex: 1;
-    padding: 12px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border: 1px solid;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .btn-confirm-yes {
-    background: var(--black);
-    color: var(--white);
-    border-color: var(--black);
-  }
+  .confirm-box { background: var(--white); border: 1px solid var(--border); padding: 32px 28px; max-width: 380px; width: 100%; }
+  .confirm-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .confirm-box p { font-size: 12px; color: #444; line-height: 1.6; margin-bottom: 20px; }
+  .confirm-actions { display: flex; gap: 8px; }
+  .btn-full { flex: 1; padding: 10px; font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid; cursor: pointer; transition: all 0.1s; }
+  .btn-confirm-yes { background: var(--black); color: var(--white); border-color: var(--black); }
   .btn-confirm-yes:hover { background: #333; }
+  .btn-confirm-no { background: transparent; color: var(--black); border-color: var(--border); }
+  .btn-confirm-no:hover { background: var(--off-white); }
 
-  .btn-confirm-no {
-    background: transparent;
-    color: var(--black);
-    border-color: var(--warm-gray);
-  }
-  .btn-confirm-no:hover { background: var(--light-gray); }
-
-  .last-updated {
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--mid-gray);
-    padding: 12px 32px;
-    border-top: 1px solid var(--warm-gray);
-    background: var(--white);
-    position: sticky;
-    bottom: 0;
-  }
-
-  .btn {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 12px 24px;
-    border: 1px solid var(--black);
-    background: var(--black);
-    color: var(--white);
-    cursor: pointer;
-    width: 100%;
-    margin-top: 8px;
-    transition: background 0.15s;
-  }
-  .btn:hover { background: #333; }
-
-  .refresh-indicator {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    background: var(--available);
-    border-radius: 50%;
-    margin-right: 6px;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
+  .status-bar { background: var(--white); border-top: 1px solid var(--border); padding: 10px 24px; font-size: 11px; color: var(--mid-gray); display: flex; align-items: center; gap: 8px; position: sticky; bottom: 0; }
+  .pulse { display: inline-block; width: 6px; height: 6px; background: var(--available); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
   @media (max-width: 600px) {
     header { padding: 0 16px; }
     .stats-bar { padding: 0 16px; }
-    .controls { padding: 16px; }
-    .work-list { padding: 16px; }
+    .controls { padding: 12px 16px; }
+    .work-list { padding: 12px 16px; }
     .work-row-header { grid-template-columns: 1fr auto; }
     .work-row-price { display: none; }
   }
@@ -611,40 +137,39 @@
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div class="login-screen" id="login-screen">
   <div class="login-box">
-    <h1>Volunteer access</h1>
-    <p>Conners Conners — Fundraiser dashboard</p>
-    <div class="login-group">
-      <label>Password</label>
-      <input type="password" id="password-input" placeholder="Enter volunteer password"
-             onkeydown="if(event.key==='Enter') attemptLogin()">
-    </div>
+    <h1>Conners Conners</h1>
+    <p class="sub">Volunteer dashboard — Fundraiser 2026</p>
+    <label class="field-label">Password</label>
+    <input type="password" class="field-input" id="password-input"
+           placeholder="Enter volunteer password"
+           onkeydown="if(event.key==='Enter'){event.preventDefault();attemptLogin();}">
     <div class="login-error" id="login-error">Incorrect password. Try again.</div>
-    <button class="btn" onclick="attemptLogin()">Sign in</button>
+    <button class="btn" type="button" onclick="attemptLogin()">Sign in</button>
   </div>
 </div>
 
 <!-- DASHBOARD -->
 <div class="dashboard" id="dashboard">
   <header>
-    <div class="header-left">
+    <div style="display:flex;align-items:center">
       <span class="logo">Conners Conners</span>
-      <span class="header-badge">Volunteer</span>
+      <span class="header-tag">Volunteer</span>
     </div>
     <div class="header-actions">
-      <button class="btn-sm" onclick="loadWorks()">↻ Refresh</button>
+      <button class="btn-sm btn-sm-default" onclick="loadWorks()">↻ Refresh</button>
       <button class="btn-sm btn-sm-danger" onclick="confirmCloseAll()">Close all sales</button>
-      <button class="btn-sm" onclick="logout()">Sign out</button>
+      <button class="btn-sm btn-sm-default" onclick="logout()">Sign out</button>
     </div>
   </header>
 
-  <div class="stats-bar" id="stats-bar">
-    <div class="stat"><span class="stat-value" id="stat-total">—</span><span class="stat-label">Total works</span></div>
-    <div class="stat"><span class="stat-value" id="stat-available" style="color:var(--available)">—</span><span class="stat-label">Available</span></div>
+  <div class="stats-bar">
+    <div class="stat"><span class="stat-value" id="stat-total">—</span><span class="stat-label">Total</span></div>
+    <div class="stat"><span class="stat-value" id="stat-available">—</span><span class="stat-label">Available</span></div>
     <div class="stat"><span class="stat-value" id="stat-pending" style="color:var(--pending)">—</span><span class="stat-label">Pending</span></div>
-    <div class="stat"><span class="stat-value" id="stat-sold" style="color:var(--sold)">—</span><span class="stat-label">Sold</span></div>
+    <div class="stat"><span class="stat-value" id="stat-sold" style="color:var(--mid-gray)">—</span><span class="stat-label">Sold</span></div>
     <div class="stat"><span class="stat-value" id="stat-revenue">—</span><span class="stat-label">Revenue</span></div>
   </div>
 
@@ -660,12 +185,12 @@
   </div>
 
   <div class="work-list" id="work-list">
-    <p style="font-family:var(--mono);font-size:12px;color:var(--mid-gray);padding:20px 0">Loading works…</p>
+    <p style="font-size:12px;color:var(--mid-gray);padding:20px 0">Loading works…</p>
   </div>
 
-  <div class="last-updated">
-    <span class="refresh-indicator"></span>
-    <span id="last-updated-text">Auto-refreshes every 30 seconds</span>
+  <div class="status-bar">
+    <span class="pulse"></span>
+    <span id="last-updated">Auto-refreshes every 30 seconds</span>
   </div>
 </div>
 
@@ -682,32 +207,20 @@
 </div>
 
 <script>
-// =====================================================================
-// CONFIGURATION
-// =====================================================================
-const CONFIG = {
-  https://script.google.com/macros/s/AKfycbwXQRIeL7D7uVELVEhqsjO5BzHo3w-9KCN1ku_FNq5AvXWQQGGRRX6cb4KvkX80tclZ/exec
-  VOLUNTEER_PASSWORD: 'ccvolunteer2025', // Change this before the event
-  AUTO_REFRESH_SECONDS: 30,
-};
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwXQRIeL7D7uVELVEhqsjO5BzHo3w-9KCN1ku_FNq5AvXWQQGGRRX6cb4KvkX80tclZ/exec';
+const VOLUNTEER_PASSWORD = 'ccvolunteer2025'; // Change before the event
+const AUTO_REFRESH = 30000;
 
-// =====================================================================
-// STATE
-// =====================================================================
-let allWorks = [];
-let refreshTimer = null;
-let pendingAction = null;
+let allWorks = [], refreshTimer = null, pendingAction = null;
 
-// =====================================================================
-// AUTH
-// =====================================================================
+// ---- AUTH ----
 function attemptLogin() {
   const pwd = document.getElementById('password-input').value;
-  if (pwd === CONFIG.VOLUNTEER_PASSWORD) {
+  if (pwd === VOLUNTEER_PASSWORD) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').classList.add('open');
     loadWorks();
-    startAutoRefresh();
+    refreshTimer = setInterval(loadWorks, AUTO_REFRESH);
   } else {
     document.getElementById('login-error').style.display = 'block';
     document.getElementById('password-input').value = '';
@@ -722,305 +235,143 @@ function logout() {
   document.getElementById('password-input').value = '';
 }
 
-// =====================================================================
-// DATA
-// =====================================================================
+// ---- DATA ----
 async function loadWorks() {
-  if (CONFIG.SHEET_API_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-    // Demo mode
-    if (allWorks.length === 0) allWorks = getDemoWorks();
-    renderList();
-    updateStats();
-    updateTimestamp();
-    return;
-  }
-
   try {
-    const res = await fetch(CONFIG.SHEET_API_URL + '?action=getWorksAdmin&pwd=' + encodeURIComponent(CONFIG.VOLUNTEER_PASSWORD));
+    const res = await fetch(SHEET_API_URL + '?action=getWorksAdmin&pwd=' + encodeURIComponent(VOLUNTEER_PASSWORD));
     const data = await res.json();
     if (data.works) {
-      allWorks = data.works;
-      renderList();
-      updateStats();
-      updateTimestamp();
+      allWorks = data.works.filter(w => w.id && (w.artist || w.title));
+      renderList(); updateStats();
+      document.getElementById('last-updated').textContent =
+        'Updated ' + new Date().toLocaleTimeString('en-AU', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
     }
-  } catch (e) {
-    console.error('Refresh failed', e);
-  }
+  } catch(e) { console.error('Refresh failed', e); }
 }
 
 async function sendAction(payload) {
-  if (CONFIG.SHEET_API_URL === 'YOUR_APPS_SCRIPT_URL_HERE') {
-    // Demo mode — apply locally
-    applyDemoAction(payload);
-    renderList();
-    updateStats();
-    return { success: true };
-  }
-
-  const res = await fetch(CONFIG.SHEET_API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...payload, pwd: CONFIG.VOLUNTEER_PASSWORD }),
-  });
-  const data = await res.json();
-  if (data.works) {
-    allWorks = data.works;
-    renderList();
-    updateStats();
-  }
-  return data;
-}
-
-function applyDemoAction(payload) {
-  const work = allWorks.find(w => w.id === payload.workId);
-  if (!work) return;
-  if (payload.action === 'confirmSold') {
-    work.status = 'sold';
-    work.queue = [];
-  } else if (payload.action === 'expireFirst') {
-    if (work.queue && work.queue.length > 0) {
-      work.queue.shift();
-      work.status = work.queue.length > 0 ? 'pending' : 'available';
+  try {
+    const res = await fetch(SHEET_API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({...payload, pwd: VOLUNTEER_PASSWORD}),
+    });
+    const data = await res.json();
+    if (data.works) {
+      allWorks = data.works.filter(w => w.id && (w.artist || w.title));
+      renderList(); updateStats();
     }
-  } else if (payload.action === 'closeWork') {
-    work.status = 'sold';
-    work.queue = [];
-  } else if (payload.action === 'closeAll') {
-    allWorks.forEach(w => { if (w.status !== 'sold') w.status = 'sold'; w.queue = []; });
-  }
+  } catch(e) { console.error('Action failed', e); }
 }
 
-// =====================================================================
-// RENDER
-// =====================================================================
+// ---- RENDER ----
 function renderList() {
   const search = document.getElementById('search-input').value.toLowerCase();
   const filter = document.getElementById('filter-select').value;
-
   let works = allWorks.filter(w => {
-    const matchFilter = filter === 'all' || w.status === filter;
-    const matchSearch = !search ||
-      w.artist.toLowerCase().includes(search) ||
-      w.title.toLowerCase().includes(search);
-    return matchFilter && matchSearch;
+    const mf = filter === 'all' || w.status === filter;
+    const ms = !search || (w.artist||'').toLowerCase().includes(search) || (w.title||'').toLowerCase().includes(search);
+    return mf && ms;
   });
-
-  // Sort: pending first, then available, then sold; within pending sort by queue length desc
-  works.sort((a, b) => {
-    const order = { pending: 0, available: 1, sold: 2 };
-    if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
-    return (b.queue?.length || 0) - (a.queue?.length || 0);
+  works.sort((a,b) => {
+    const o = {pending:0, available:1, sold:2};
+    if (o[a.status] !== o[b.status]) return o[a.status] - o[b.status];
+    return (b.queue?.length||0) - (a.queue?.length||0);
   });
-
   const list = document.getElementById('work-list');
-  if (works.length === 0) {
-    list.innerHTML = '<p style="font-family:var(--mono);font-size:12px;color:var(--mid-gray);padding:20px 0">No works match.</p>';
-    return;
-  }
-
-  list.innerHTML = works.map(w => renderWorkRow(w)).join('');
+  if (!works.length) { list.innerHTML = '<p style="font-size:12px;color:var(--mid-gray);padding:20px 0">No works match.</p>'; return; }
+  list.innerHTML = works.map(w => buildRow(w)).join('');
 }
 
-function renderWorkRow(w) {
+function buildRow(w) {
   const qLen = w.queue?.length || 0;
-  const queueCountHtml = qLen > 0
-    ? `<span class="queue-count">${qLen} in queue</span>`
-    : '';
-
-  const queueHtml = qLen === 0
-    ? `<p class="queue-empty">No commitments yet.</p>`
-    : w.queue.map((buyer, i) => `
+  const queueItems = qLen === 0
+    ? '<p class="queue-empty">No commitments yet.</p>'
+    : w.queue.map((b,i) => `
         <div class="queue-item">
-          <div class="queue-position ${i === 0 ? 'first' : ''}">${i + 1}</div>
+          <div class="queue-position ${i===0?'first':''}">${i+1}</div>
           <div>
-            <div class="queue-buyer-name">${escHtml(buyer.name)}</div>
-            <div class="queue-buyer-contact">
-              ${escHtml(buyer.email)}<br>
-              ${escHtml(buyer.phone)}${buyer.timestamp ? '<br>' + formatTime(buyer.timestamp) : ''}
-            </div>
-            ${i === 0 ? `
-            <div class="queue-actions">
-              <button class="action-btn action-btn-confirm" onclick="confirmAction('confirmSold','${w.id}','Mark as sold to ${escAttr(buyer.name)}?','This will mark the work as sold and clear the queue.')">✓ Confirm sold</button>
-              <button class="action-btn action-btn-expire" onclick="confirmAction('expireFirst','${w.id}','Expire this commitment?','${escAttr(buyer.name)} will be removed and the next person in the queue will become first.')">Expire commitment</button>
-            </div>` : ''}
+            <div class="queue-buyer-name">${esc(b.name)}</div>
+            <div class="queue-buyer-contact">${esc(b.email)}<br>${esc(b.phone)}${b.timestamp?'<br>'+fmt(b.timestamp):''}</div>
+            ${i===0?`<div class="queue-actions">
+              <button class="action-btn action-btn-confirm" onclick="confirmAction('confirmSold','${w.id}','Mark as sold to ${escA(b.name)}?','This will mark the work as sold and clear the queue.')">✓ Confirm sold</button>
+              <button class="action-btn action-btn-expire" onclick="confirmAction('expireFirst','${w.id}','Expire this commitment?','${escA(b.name)} will be removed and the next person promoted.')">Expire</button>
+            </div>`:''}
           </div>
-          <span class="queue-buyer-type">${buyer.paymentType === 'transfer' ? 'Transfer' : 'At desk'}</span>
-        </div>
-      `).join('');
+          <span class="queue-buyer-type">${b.paymentType==='transfer'?'Transfer':'At desk'}</span>
+        </div>`).join('');
 
-  const actionsHtml = w.status !== 'sold'
-    ? `<button class="mark-sold-btn" onclick="confirmAction('closeWork','${w.id}','Close sales for this work?','This will mark the work as sold. Use this for works paid at the Square terminal on the night.')">Mark as sold</button>`
+  const actions = w.status !== 'sold'
+    ? `<button class="mark-sold-btn" onclick="confirmAction('closeWork','${w.id}','Mark as sold?','Use this for works paid at the Square terminal on the night.')">Mark as sold</button>`
     : '';
 
   return `
     <div class="work-row status-${w.status}" id="row-${w.id}">
       <div class="work-row-header" onclick="toggleRow('${w.id}')">
-        <div class="work-row-info">
-          <div class="work-row-artist">${escHtml(w.artist)}</div>
-          <div class="work-row-title">${escHtml(w.title)}</div>
-          <div class="work-row-meta">${w.medium || ''}${w.medium && w.dimensions ? ' · ' : ''}${w.dimensions || ''}</div>
+        <div>
+          <div class="work-row-artist">${esc(w.artist||'')}</div>
+          <div class="work-row-title">${esc(w.title||'Untitled')}</div>
+          <div class="work-row-meta">${[w.medium,w.dimensions].filter(Boolean).join(' · ')}</div>
         </div>
-        <div class="work-row-price">$${Number(w.price).toLocaleString()}</div>
-        <div class="work-row-status">
+        <div class="work-row-price">${w.price?'$'+Number(w.price).toLocaleString():''}</div>
+        <div class="work-row-badges">
           <span class="status-badge badge-${w.status}">${statusLabel(w.status)}</span>
-          ${queueCountHtml}
+          ${qLen>0?`<span class="queue-count">${qLen} in queue</span>`:''}
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="work-row-detail">
         <div class="detail-inner">
-          <div class="queue-section">
-            <h4>Purchase queue</h4>
-            ${queueHtml}
-          </div>
-          ${actionsHtml}
+          <div class="queue-section"><h4>Purchase queue</h4>${queueItems}</div>
+          ${actions}
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 function toggleRow(id) {
-  const row = document.getElementById('row-' + id);
-  if (row) row.classList.toggle('expanded');
+  document.getElementById('row-'+id)?.classList.toggle('expanded');
 }
 
-// =====================================================================
-// STATS
-// =====================================================================
 function updateStats() {
-  const total = allWorks.length;
-  const available = allWorks.filter(w => w.status === 'available').length;
-  const pending = allWorks.filter(w => w.status === 'pending').length;
-  const sold = allWorks.filter(w => w.status === 'sold').length;
-  const revenue = allWorks
-    .filter(w => w.status === 'sold')
-    .reduce((sum, w) => sum + Number(w.price), 0);
-
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-available').textContent = available;
-  document.getElementById('stat-pending').textContent = pending;
-  document.getElementById('stat-sold').textContent = sold;
-  document.getElementById('stat-revenue').textContent = revenue > 0
-    ? '$' + revenue.toLocaleString()
-    : '—';
+  document.getElementById('stat-total').textContent = allWorks.length;
+  document.getElementById('stat-available').textContent = allWorks.filter(w=>w.status==='available').length;
+  document.getElementById('stat-pending').textContent = allWorks.filter(w=>w.status==='pending').length;
+  document.getElementById('stat-sold').textContent = allWorks.filter(w=>w.status==='sold').length;
+  const rev = allWorks.filter(w=>w.status==='sold').reduce((s,w)=>s+Number(w.price||0),0);
+  document.getElementById('stat-revenue').textContent = rev > 0 ? '$'+rev.toLocaleString() : '—';
 }
 
-function updateTimestamp() {
-  const now = new Date();
-  document.getElementById('last-updated-text').textContent =
-    'Last updated ' + now.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-}
-
-// =====================================================================
-// CONFIRM ACTIONS
-// =====================================================================
+// ---- CONFIRM ----
 function confirmAction(action, workId, title, body) {
-  pendingAction = { action, workId };
+  pendingAction = {action, workId};
   document.getElementById('confirm-title').textContent = title;
   document.getElementById('confirm-body').textContent = body;
   document.getElementById('confirm-overlay').classList.add('open');
-  document.getElementById('confirm-yes').onclick = executePendingAction;
+  document.getElementById('confirm-yes').onclick = executePending;
 }
 
 function confirmCloseAll() {
-  pendingAction = { action: 'closeAll' };
+  pendingAction = {action:'closeAll'};
   document.getElementById('confirm-title').textContent = 'Close all sales?';
   document.getElementById('confirm-body').textContent = 'This will mark ALL remaining works as sold and clear all queues. This cannot be undone.';
   document.getElementById('confirm-overlay').classList.add('open');
-  document.getElementById('confirm-yes').onclick = executePendingAction;
+  document.getElementById('confirm-yes').onclick = executePending;
 }
 
-async function executePendingAction() {
+async function executePending() {
   closeConfirm();
-  if (!pendingAction) return;
-  await sendAction(pendingAction);
-  pendingAction = null;
+  if (pendingAction) { await sendAction(pendingAction); pendingAction = null; }
 }
 
-function closeConfirm() {
-  document.getElementById('confirm-overlay').classList.remove('open');
-}
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeConfirm(); });
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeConfirm();
-});
-
-// =====================================================================
-// AUTO REFRESH
-// =====================================================================
-function startAutoRefresh() {
-  refreshTimer = setInterval(() => {
-    loadWorks();
-  }, CONFIG.AUTO_REFRESH_SECONDS * 1000);
-}
-
-// =====================================================================
-// HELPERS
-// =====================================================================
-function statusLabel(s) {
-  return s === 'available' ? 'Available' : s === 'pending' ? 'Pending' : 'Sold';
-}
-
-function escHtml(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function escAttr(str) {
-  return String(str || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
-}
-
-function formatTime(ts) {
-  try {
-    return new Date(ts).toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' });
-  } catch { return ''; }
-}
-
-// =====================================================================
-// DEMO DATA
-// =====================================================================
-function getDemoWorks() {
-  return [
-    {
-      id: 'w001', artist: 'Rose Nolan', title: 'Untitled (Study No. 4)',
-      medium: 'Acrylic on canvas', dimensions: '120 × 90 cm', year: '2024',
-      price: 1800, status: 'available', imageUrl: '', queue: []
-    },
-    {
-      id: 'w002', artist: 'Jordan Halsall', title: 'Passage',
-      medium: 'Oil on linen', dimensions: '80 × 60 cm', year: '2024',
-      price: 2400, status: 'available', imageUrl: '', queue: []
-    },
-    {
-      id: 'w003', artist: 'David Keating', title: 'Interior with Figures',
-      medium: 'Gouache on paper', dimensions: '42 × 59 cm', year: '2023',
-      price: 950, status: 'pending', imageUrl: '',
-      queue: [
-        { name: 'Samira O\'Brien', email: 'samira@example.com', phone: '0412 345 678', paymentType: 'transfer', timestamp: new Date(Date.now() - 20*60000).toISOString() },
-        { name: 'Lee Marchetti', email: 'lee@example.com', phone: '0423 456 789', paymentType: 'desk', timestamp: new Date(Date.now() - 8*60000).toISOString() },
-      ]
-    },
-    {
-      id: 'w004', artist: 'Angela Brennan', title: 'Yellow Form',
-      medium: 'Oil on board', dimensions: '60 × 50 cm', year: '2024',
-      price: 3200, status: 'available', imageUrl: '', queue: []
-    },
-    {
-      id: 'w005', artist: 'Camille Perry', title: 'Soft Architecture',
-      medium: 'Watercolour on paper', dimensions: '30 × 40 cm', year: '2024',
-      price: 680, status: 'sold', imageUrl: '', queue: []
-    },
-    {
-      id: 'w006', artist: 'Jackson McLaren', title: 'Still',
-      medium: 'Acrylic on canvas', dimensions: '100 × 80 cm', year: '2024',
-      price: 1600, status: 'pending', imageUrl: '',
-      queue: [
-        { name: 'Priya Desai', email: 'priya@example.com', phone: '0498 765 432', paymentType: 'transfer', timestamp: new Date(Date.now() - 5*60000).toISOString() },
-      ]
-    },
-  ];
-}
+// ---- HELPERS ----
+function statusLabel(s) { return s==='sold'?'Sold':s==='pending'?'Pending':'Available'; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return String(s||'').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
+function fmt(ts) { try { return new Date(ts).toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}); } catch{return '';} }
 </script>
 </body>
 </html>
