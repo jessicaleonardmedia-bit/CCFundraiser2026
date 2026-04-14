@@ -7,19 +7,10 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --black: #0a0a0a;
-    --white: #ffffff;
-    --off-white: #f8f8f8;
-    --light-gray: #eeeeee;
-    --mid-gray: #999999;
-    --border: #e0e0e0;
-    --pending: #b07d3a;
-    --pending-bg: #fdf3e3;
-    --available: #2d6a4f;
-    --available-bg: #edf5f0;
-    --sold: #999999;
-    --danger: #b03a3a;
-    --danger-bg: #fdf0f0;
+    --black: #0a0a0a; --white: #ffffff; --off-white: #f8f8f8; --light-gray: #eeeeee;
+    --mid-gray: #999999; --border: #e0e0e0; --pending: #b07d3a; --pending-bg: #fdf3e3;
+    --available: #2d6a4f; --available-bg: #edf5f0; --sold: #999999;
+    --danger: #b03a3a; --danger-bg: #fdf0f0;
     --font: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
   html, body { font-family: var(--font); background: var(--off-white); color: var(--black); font-size: 14px; min-height: 100vh; }
@@ -35,9 +26,11 @@
   .login-error { font-size: 12px; color: var(--danger); margin: 8px 0; display: none; }
   .btn { display: block; width: 100%; padding: 11px 16px; font-family: var(--font); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--black); background: var(--black); color: var(--white); text-align: center; margin-top: 12px; transition: background 0.1s; }
   .btn:hover { background: #333; }
-  .btn-outline { background: transparent; color: var(--black); }
-  .btn-outline:hover { background: var(--off-white); }
   .btn-sm { font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 12px; border: 1px solid; cursor: pointer; transition: all 0.1s; background: transparent; }
+  .btn-sm-default { border-color: var(--border); color: var(--black); }
+  .btn-sm-default:hover { border-color: var(--black); }
+  .btn-sm-danger { border-color: var(--danger); color: var(--danger); }
+  .btn-sm-danger:hover { background: var(--danger-bg); }
 
   /* DASHBOARD */
   .dashboard { display: none; }
@@ -47,31 +40,27 @@
   .logo { font-size: 14px; font-weight: 700; color: var(--black); }
   .header-tag { font-size: 11px; color: var(--mid-gray); margin-left: 10px; }
   .header-actions { display: flex; gap: 8px; align-items: center; }
-  .btn-sm-default { border-color: var(--border); color: var(--black); }
-  .btn-sm-default:hover { border-color: var(--black); }
-  .btn-sm-danger { border-color: var(--danger); color: var(--danger); }
-  .btn-sm-danger:hover { background: var(--danger-bg); }
 
-  /* STATS */
   .stats-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; overflow-x: auto; }
   .stat { padding: 14px 24px 14px 0; display: flex; flex-direction: column; gap: 2px; min-width: 80px; border-right: 1px solid var(--border); margin-right: 24px; }
   .stat:last-child { border-right: none; }
   .stat-value { font-size: 26px; font-weight: 700; line-height: 1; }
   .stat-label { font-size: 11px; color: var(--mid-gray); text-transform: uppercase; letter-spacing: 0.06em; }
 
-  /* CONTROLS */
   .controls { padding: 16px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--off-white); border-bottom: 1px solid var(--border); }
   .search-input { border: 1px solid var(--border); background: var(--white); padding: 8px 12px; font-family: var(--font); font-size: 12px; outline: none; transition: border-color 0.1s; min-width: 200px; border-radius: 0; }
   .search-input:focus { border-color: var(--black); }
   .filter-select { border: 1px solid var(--border); background: var(--white); padding: 8px 12px; font-family: var(--font); font-size: 12px; outline: none; cursor: pointer; color: var(--black); border-radius: 0; -webkit-appearance: none; }
   .close-all-btn { margin-left: auto; font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--danger); background: transparent; color: var(--danger); cursor: pointer; transition: all 0.1s; }
   .close-all-btn:hover { background: var(--danger-bg); }
+  .qr-btn { font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--border); background: var(--white); color: var(--black); cursor: pointer; transition: all 0.1s; }
+  .qr-btn:hover { border-color: var(--black); }
 
   /* WORK LIST */
   .work-list { padding: 20px 24px; display: flex; flex-direction: column; gap: 10px; }
   .work-row { background: var(--white); border: 1px solid var(--border); overflow: hidden; }
   .work-row.status-pending { border-left: 3px solid var(--pending); }
-  .work-row.status-sold { border-left: 3px solid var(--mid-gray); opacity: 0.6; }
+  .work-row.status-sold { border-left: 3px solid var(--mid-gray); opacity: 0.65; }
   .work-row.status-available { border-left: 3px solid var(--black); }
   .work-row-header { padding: 14px 18px; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 14px; cursor: pointer; user-select: none; }
   .work-row-artist { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mid-gray); margin-bottom: 2px; }
@@ -91,6 +80,22 @@
   .work-row.expanded .work-row-detail { display: block; }
   .detail-inner { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
 
+  /* STATUS CONTROLS */
+  .status-controls { display: flex; flex-direction: column; gap: 8px; }
+  .status-controls h4 { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 4px; }
+  .status-btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .status-btn { font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 12px; border: 1px solid; background: var(--white); cursor: pointer; transition: all 0.1s; }
+  .status-btn-available { border-color: var(--black); color: var(--black); }
+  .status-btn-available:hover { background: var(--light-gray); }
+  .status-btn-pending { border-color: var(--pending); color: var(--pending); }
+  .status-btn-pending:hover { background: var(--pending-bg); }
+  .status-btn-sold { border-color: var(--sold); color: var(--sold); }
+  .status-btn-sold:hover { background: var(--light-gray); }
+  .status-btn-unsold { border-color: var(--danger); color: var(--danger); }
+  .status-btn-unsold:hover { background: var(--danger-bg); }
+  .status-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* QUEUE */
   .queue-section h4 { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 10px; }
   .queue-empty { font-size: 12px; color: var(--mid-gray); }
   .queue-item { background: var(--white); border: 1px solid var(--border); padding: 12px 14px; display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: start; margin-bottom: 8px; }
@@ -105,15 +110,14 @@
   .action-btn-confirm:hover { background: var(--available-bg); }
   .action-btn-expire { border-color: var(--pending); color: var(--pending); }
   .action-btn-expire:hover { background: var(--pending-bg); }
-  .mark-sold-btn { font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 7px 12px; border: 1px solid var(--mid-gray); background: transparent; color: var(--mid-gray); cursor: pointer; transition: all 0.1s; }
-  .mark-sold-btn:hover { background: var(--light-gray); }
 
   /* CONFIRM MODAL */
   .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
   .confirm-overlay.open { display: flex; }
   .confirm-box { background: var(--white); border: 1px solid var(--border); padding: 32px 28px; max-width: 380px; width: 100%; }
   .confirm-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-  .confirm-box p { font-size: 12px; color: #444; line-height: 1.6; margin-bottom: 20px; }
+  .confirm-box p { font-size: 12px; color: #444; line-height: 1.6; margin-bottom: 8px; }
+  .confirm-input-wrap { margin-bottom: 16px; }
   .confirm-actions { display: flex; gap: 8px; }
   .btn-full { flex: 1; padding: 10px; font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid; cursor: pointer; transition: all 0.1s; }
   .btn-confirm-yes { background: var(--black); color: var(--white); border-color: var(--black); }
@@ -121,9 +125,34 @@
   .btn-confirm-no { background: transparent; color: var(--black); border-color: var(--border); }
   .btn-confirm-no:hover { background: var(--off-white); }
 
+  /* QR MODAL */
+  .qr-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; }
+  .qr-overlay.open { display: flex; }
+  .qr-panel { background: var(--white); max-width: 960px; width: 100%; margin: auto; }
+  .qr-panel-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .qr-panel-header h2 { font-size: 16px; font-weight: 700; }
+  .qr-panel-actions { display: flex; gap: 10px; }
+  .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px; background: var(--border); }
+  .qr-item { background: var(--white); padding: 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+  .qr-item canvas { display: block; }
+  .qr-item-artist { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mid-gray); }
+  .qr-item-title { font-size: 12px; font-weight: 700; line-height: 1.3; }
+  .qr-item-price { font-size: 11px; color: var(--mid-gray); }
+  .qr-item-id { font-size: 10px; color: var(--light-gray); font-family: monospace; }
+  .qr-index-item { background: var(--off-white); border: 2px solid var(--black); }
+
   .status-bar { background: var(--white); border-top: 1px solid var(--border); padding: 10px 24px; font-size: 11px; color: var(--mid-gray); display: flex; align-items: center; gap: 8px; position: sticky; bottom: 0; }
   .pulse { display: inline-block; width: 6px; height: 6px; background: var(--available); border-radius: 50%; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  @media print {
+    .dashboard > *:not(.qr-overlay) { display: none !important; }
+    .qr-overlay { position: static; display: block !important; background: none; padding: 0; }
+    .qr-panel { max-width: 100%; box-shadow: none; }
+    .qr-panel-header, .qr-panel-actions { display: none !important; }
+    .qr-grid { gap: 0; }
+    .qr-item { break-inside: avoid; border: 1px solid #ddd; }
+  }
 
   @media (max-width: 600px) {
     header { padding: 0 16px; }
@@ -143,10 +172,9 @@
     <h1>Conners Conners</h1>
     <p class="sub">Volunteer dashboard — Fundraiser 2026</p>
     <label class="field-label">Password</label>
-    <input type="password" class="field-input" id="password-input"
-           placeholder="Enter volunteer password"
+    <input type="password" class="field-input" id="password-input" placeholder="Enter password"
            onkeydown="if(event.key==='Enter'){event.preventDefault();attemptLogin();}">
-    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
+    <div class="login-error" id="login-error">Incorrect password.</div>
     <button class="btn" type="button" onclick="attemptLogin()">Sign in</button>
   </div>
 </div>
@@ -156,7 +184,7 @@
   <header>
     <div style="display:flex;align-items:center">
       <span class="logo">Conners Conners</span>
-      <span class="header-tag">Volunteer</span>
+      <span class="header-tag" id="role-tag">Volunteer</span>
     </div>
     <div class="header-actions">
       <button class="btn-sm btn-sm-default" onclick="loadWorks()">↻ Refresh</button>
@@ -181,6 +209,7 @@
       <option value="pending">Pending</option>
       <option value="sold">Sold</option>
     </select>
+    <button class="qr-btn" onclick="openQRPanel()">⊞ QR codes</button>
     <button class="close-all-btn" onclick="confirmCloseAll()">⚠ Close all sales</button>
   </div>
 
@@ -190,7 +219,7 @@
 
   <div class="status-bar">
     <span class="pulse"></span>
-    <span id="last-updated">Auto-refreshes every 30 seconds</span>
+    <span id="last-updated">Auto-refreshes every 15 seconds</span>
   </div>
 </div>
 
@@ -198,27 +227,54 @@
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <h3 id="confirm-title">Confirm action</h3>
-    <p id="confirm-body">Are you sure?</p>
+    <p id="confirm-body"></p>
+    <div class="confirm-input-wrap" id="confirm-input-wrap" style="display:none">
+      <label class="field-label" style="margin-top:8px">Admin password required</label>
+      <input type="password" class="field-input" id="confirm-admin-pwd" placeholder="Enter admin password"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();executePending();}">
+      <div style="font-size:11px;color:var(--danger);margin-top:6px;display:none" id="admin-pwd-error">Incorrect admin password.</div>
+    </div>
     <div class="confirm-actions">
-      <button class="btn-full btn-confirm-yes" id="confirm-yes">Confirm</button>
+      <button class="btn-full btn-confirm-yes" onclick="executePending()">Confirm</button>
       <button class="btn-full btn-confirm-no" onclick="closeConfirm()">Cancel</button>
     </div>
   </div>
 </div>
 
+<!-- QR CODE PANEL -->
+<div class="qr-overlay" id="qr-overlay">
+  <div class="qr-panel">
+    <div class="qr-panel-header">
+      <h2>QR codes</h2>
+      <div class="qr-panel-actions">
+        <button class="qr-btn" onclick="window.print()">Print all</button>
+        <button class="qr-btn" onclick="closeQRPanel()">Close</button>
+      </div>
+    </div>
+    <div class="qr-grid" id="qr-grid"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwXQRIeL7D7uVELVEhqsjO5BzHo3w-9KCN1ku_FNq5AvXWQQGGRRX6cb4KvkX80tclZ/exec';
-const VOLUNTEER_PASSWORD = 'ccvolunteer2025'; // Change before the event
-const AUTO_REFRESH = 30000;
+const VOLUNTEER_PASSWORD = 'ccvolunteer2025';  // change before event
+const ADMIN_PASSWORD = 'ccadmin2026';           // change before event — required for Sold → Available
+const AUTO_REFRESH = 15000;
 
-let allWorks = [], refreshTimer = null, pendingAction = null;
+// Public gallery base URL — update if your GitHub Pages URL changes
+const GALLERY_URL = 'https://jessicaleonardmedia-bit.github.io/CCFundraiser2026/index.html';
+
+let allWorks = [], refreshTimer = null, pendingAction = null, isAdmin = false;
 
 // ---- AUTH ----
 function attemptLogin() {
   const pwd = document.getElementById('password-input').value;
-  if (pwd === VOLUNTEER_PASSWORD) {
+  if (pwd === VOLUNTEER_PASSWORD || pwd === ADMIN_PASSWORD) {
+    isAdmin = (pwd === ADMIN_PASSWORD);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').classList.add('open');
+    document.getElementById('role-tag').textContent = isAdmin ? 'Admin' : 'Volunteer';
     loadWorks();
     refreshTimer = setInterval(loadWorks, AUTO_REFRESH);
   } else {
@@ -233,6 +289,7 @@ function logout() {
   document.getElementById('dashboard').classList.remove('open');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('password-input').value = '';
+  isAdmin = false;
 }
 
 // ---- DATA ----
@@ -261,7 +318,8 @@ async function sendAction(payload) {
       allWorks = data.works.filter(w => w.id && (w.artist || w.title));
       renderList(); updateStats();
     }
-  } catch(e) { console.error('Action failed', e); }
+    return data;
+  } catch(e) { console.error('Action failed', e); return { success: false }; }
 }
 
 // ---- RENDER ----
@@ -285,6 +343,28 @@ function renderList() {
 
 function buildRow(w) {
   const qLen = w.queue?.length || 0;
+  const s = w.status || 'available';
+
+  // Status buttons — show only transitions that make sense for this role
+  const canMarkAvailable = s !== 'available';
+  const canMarkPending   = s !== 'pending';
+  const canMarkSold      = s !== 'sold';
+  const requiresAdmin    = s === 'sold'; // reversing sold → anything needs admin
+
+  const statusBtns = `
+    <button class="status-btn status-btn-available" ${!canMarkAvailable ? 'disabled' : ''}
+      onclick="${requiresAdmin ? `confirmAdminAction('setStatus','${w.id}','available','Mark as available?','This will reverse a sold status and requires the admin password.')` : `confirmAction('setStatus','${w.id}','available','Mark as available?','Work will be listed as available.')`}">
+      Mark available
+    </button>
+    <button class="status-btn status-btn-pending" ${!canMarkPending ? 'disabled' : ''}
+      onclick="confirmAction('setStatus','${w.id}','pending','Mark as pending?','Work will show as pending purchase.')">
+      Mark pending
+    </button>
+    <button class="status-btn status-btn-sold" ${!canMarkSold ? 'disabled' : ''}
+      onclick="confirmAction('setStatus','${w.id}','sold','Mark as sold?','Use this for Square terminal payments on the night.')">
+      Mark sold
+    </button>`;
+
   const queueItems = qLen === 0
     ? '<p class="queue-empty">No commitments yet.</p>'
     : w.queue.map((b,i) => `
@@ -292,21 +372,17 @@ function buildRow(w) {
           <div class="queue-position ${i===0?'first':''}">${i+1}</div>
           <div>
             <div class="queue-buyer-name">${esc(b.name)}</div>
-            <div class="queue-buyer-contact">${esc(b.email)}<br>${esc(b.phone)}${b.timestamp?'<br>'+fmt(b.timestamp):''}</div>
-            ${i===0?`<div class="queue-actions">
-              <button class="action-btn action-btn-confirm" onclick="confirmAction('confirmSold','${w.id}','Mark as sold to ${escA(b.name)}?','This will mark the work as sold and clear the queue.')">✓ Confirm sold</button>
-              <button class="action-btn action-btn-expire" onclick="confirmAction('expireFirst','${w.id}','Expire this commitment?','${escA(b.name)} will be removed and the next person promoted.')">Expire</button>
-            </div>`:''}
+            <div class="queue-buyer-contact">${esc(b.email)}<br>${esc(b.phone)}${b.timestamp?'<br>'+fmt(b.timestamp):''}${b.vipOptIn==='true'||b.vipOptIn===true?' · VIP ✓':''}</div>
+            ${i===0 ? `<div class="queue-actions">
+              <button class="action-btn action-btn-confirm" onclick="confirmAction('confirmSold','${w.id}','','Mark as sold to ${escA(b.name)}?','This marks the work as sold and clears the queue.')">✓ Confirm sold</button>
+              <button class="action-btn action-btn-expire" onclick="confirmAction('expireFirst','${w.id}','','Expire this commitment?','${escA(b.name)} will be removed and the next person promoted.')">Expire</button>
+            </div>` : ''}
           </div>
           <span class="queue-buyer-type">${b.paymentType==='transfer'?'Transfer':'At desk'}</span>
         </div>`).join('');
 
-  const actions = w.status !== 'sold'
-    ? `<button class="mark-sold-btn" onclick="confirmAction('closeWork','${w.id}','Mark as sold?','Use this for works paid at the Square terminal on the night.')">Mark as sold</button>`
-    : '';
-
   return `
-    <div class="work-row status-${w.status}" id="row-${w.id}">
+    <div class="work-row status-${s}" id="row-${w.id}">
       <div class="work-row-header" onclick="toggleRow('${w.id}')">
         <div>
           <div class="work-row-artist">${esc(w.artist||'')}</div>
@@ -315,23 +391,25 @@ function buildRow(w) {
         </div>
         <div class="work-row-price">${w.price?'$'+Number(w.price).toLocaleString():''}</div>
         <div class="work-row-badges">
-          <span class="status-badge badge-${w.status}">${statusLabel(w.status)}</span>
+          <span class="status-badge badge-${s}">${statusLabel(s)}</span>
           ${qLen>0?`<span class="queue-count">${qLen} in queue</span>`:''}
           <span class="chevron">▾</span>
         </div>
       </div>
       <div class="work-row-detail">
         <div class="detail-inner">
+          <div class="status-controls">
+            <h4>Status</h4>
+            <div class="status-btn-row">${statusBtns}</div>
+            ${s==='sold' && !isAdmin ? '<p style="font-size:11px;color:var(--mid-gray);margin-top:4px">Reversing a sold status requires the admin password.</p>' : ''}
+          </div>
           <div class="queue-section"><h4>Purchase queue</h4>${queueItems}</div>
-          ${actions}
         </div>
       </div>
     </div>`;
 }
 
-function toggleRow(id) {
-  document.getElementById('row-'+id)?.classList.toggle('expanded');
-}
+function toggleRow(id) { document.getElementById('row-'+id)?.classList.toggle('expanded'); }
 
 function updateStats() {
   document.getElementById('stat-total').textContent = allWorks.length;
@@ -342,30 +420,109 @@ function updateStats() {
   document.getElementById('stat-revenue').textContent = rev > 0 ? '$'+rev.toLocaleString() : '—';
 }
 
-// ---- CONFIRM ----
-function confirmAction(action, workId, title, body) {
-  pendingAction = {action, workId};
+// ---- CONFIRM (standard) ----
+function confirmAction(action, workId, newStatus, title, body) {
+  pendingAction = {action, workId, newStatus, requiresAdmin: false};
   document.getElementById('confirm-title').textContent = title;
   document.getElementById('confirm-body').textContent = body;
+  document.getElementById('confirm-input-wrap').style.display = 'none';
+  document.getElementById('admin-pwd-error').style.display = 'none';
   document.getElementById('confirm-overlay').classList.add('open');
-  document.getElementById('confirm-yes').onclick = executePending;
+}
+
+// ---- CONFIRM (admin required — sold → available) ----
+function confirmAdminAction(action, workId, newStatus, title, body) {
+  if (isAdmin) {
+    // Already logged in as admin — skip password prompt
+    pendingAction = {action, workId, newStatus, requiresAdmin: false};
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-body').textContent = body;
+    document.getElementById('confirm-input-wrap').style.display = 'none';
+    document.getElementById('confirm-overlay').classList.add('open');
+    return;
+  }
+  pendingAction = {action, workId, newStatus, requiresAdmin: true};
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-body').textContent = body;
+  document.getElementById('confirm-input-wrap').style.display = 'block';
+  document.getElementById('confirm-admin-pwd').value = '';
+  document.getElementById('admin-pwd-error').style.display = 'none';
+  document.getElementById('confirm-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('confirm-admin-pwd').focus(), 100);
 }
 
 function confirmCloseAll() {
-  pendingAction = {action:'closeAll'};
+  pendingAction = {action:'closeAll', requiresAdmin: false};
   document.getElementById('confirm-title').textContent = 'Close all sales?';
   document.getElementById('confirm-body').textContent = 'This will mark ALL remaining works as sold and clear all queues. This cannot be undone.';
+  document.getElementById('confirm-input-wrap').style.display = 'none';
   document.getElementById('confirm-overlay').classList.add('open');
-  document.getElementById('confirm-yes').onclick = executePending;
 }
 
 async function executePending() {
+  if (!pendingAction) return;
+
+  if (pendingAction.requiresAdmin) {
+    const pwd = document.getElementById('confirm-admin-pwd').value;
+    if (pwd !== ADMIN_PASSWORD) {
+      document.getElementById('admin-pwd-error').style.display = 'block';
+      return;
+    }
+  }
+
   closeConfirm();
-  if (pendingAction) { await sendAction(pendingAction); pendingAction = null; }
+  await sendAction(pendingAction);
+  pendingAction = null;
 }
 
-function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
-document.addEventListener('keydown', e => { if (e.key==='Escape') closeConfirm(); });
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  document.getElementById('confirm-admin-pwd').value = '';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeConfirm(); closeQRPanel(); } });
+
+// ---- QR CODES ----
+function openQRPanel() {
+  const grid = document.getElementById('qr-grid');
+  grid.innerHTML = '';
+
+  // Index QR first
+  const indexItem = document.createElement('div');
+  indexItem.className = 'qr-item qr-index-item';
+  indexItem.innerHTML = `
+    <div class="qr-item-artist">Event brochure</div>
+    <div class="qr-item-title">Conners Conners Fundraiser 2026</div>
+    <div id="qr-index-canvas"></div>
+    <div class="qr-item-price">Main gallery</div>`;
+  grid.appendChild(indexItem);
+  new QRCode(document.getElementById('qr-index-canvas'), {
+    text: GALLERY_URL, width: 160, height: 160, colorDark: '#0a0a0a', colorLight: '#ffffff',
+  });
+
+  // Per-work QR codes
+  allWorks.forEach(w => {
+    const item = document.createElement('div');
+    item.className = 'qr-item';
+    const canvasId = 'qr-' + w.id;
+    item.innerHTML = `
+      <div class="qr-item-artist">${esc(w.artist||'')}</div>
+      <div id="${canvasId}"></div>
+      <div class="qr-item-title">${esc(w.title||'Untitled')}</div>
+      <div class="qr-item-price">${w.price?'$'+Number(w.price).toLocaleString():''}</div>
+      <div class="qr-item-id">${w.id}</div>`;
+    grid.appendChild(item);
+    new QRCode(document.getElementById(canvasId), {
+      text: GALLERY_URL + '#' + w.id,
+      width: 160, height: 160,
+      colorDark: '#0a0a0a', colorLight: '#ffffff',
+    });
+  });
+
+  document.getElementById('qr-overlay').classList.add('open');
+}
+
+function closeQRPanel() { document.getElementById('qr-overlay').classList.remove('open'); }
 
 // ---- HELPERS ----
 function statusLabel(s) { return s==='sold'?'Sold':s==='pending'?'Pending':'Available'; }
