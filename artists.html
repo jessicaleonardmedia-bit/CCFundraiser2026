@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Conners Conners — Fundraiser 2026</title>
+<title>Artists — Conners Conners Fundraiser 2026</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -31,44 +31,60 @@
   /* INTRO */
   .intro { padding: 40px 24px 32px; border-bottom: 1px solid var(--border); max-width: 600px; }
   .intro-eyebrow { font-size: 12px; color: var(--mid-gray); margin-bottom: 8px; }
-  .intro h1 { font-size: 22px; font-weight: 700; margin-bottom: 12px; line-height: 1.2; }
-  .intro p { font-size: 13px; line-height: 1.6; color: #444; }
+  .intro h1 { font-size: 22px; font-weight: 700; margin-bottom: 0; line-height: 1.2; }
 
-  /* SPONSORS */
-  .sponsors { padding: 28px 24px; border-bottom: 1px solid var(--border); }
-  .sponsors-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 14px; }
-  .sponsors-list { display: flex; flex-wrap: wrap; gap: 8px 0; }
-  .sponsor-item { font-size: 13px; color: var(--black); padding-right: 16px; margin-right: 16px; border-right: 1px solid var(--border); line-height: 1.5; }
-  .sponsor-item:last-child { border-right: none; padding-right: 0; margin-right: 0; }
-  .sponsor-item a { color: var(--black); text-decoration: none; }
-  .sponsor-item a:hover { text-decoration: underline; }
+  /* ARTIST LIST */
+  .artist-section { border-bottom: 1px solid var(--border); }
 
-  /* FILTER BAR */
-  .filter-bar { padding: 12px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
-  .filter-pills { display: flex; }
-  .pill { font-size: 12px; padding: 5px 14px; border: 1px solid var(--border); background: transparent; cursor: pointer; color: var(--mid-gray); margin-right: -1px; transition: all 0.1s; font-family: var(--font); }
-  .pill:hover { color: var(--black); border-color: var(--black); z-index: 1; position: relative; }
-  .pill.active { background: var(--black); color: var(--white); border-color: var(--black); z-index: 1; position: relative; }
-  .work-count { margin-left: auto; font-size: 12px; color: var(--mid-gray); }
+  .artist-header {
+    padding: 24px 24px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s;
+  }
+  .artist-header:hover { background: var(--off-white); }
 
-  /* GRID */
-  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-  .work-card { cursor: pointer; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); transition: background 0.1s; }
-  .work-card:hover { background: var(--off-white); }
+  .artist-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .artist-represented { font-size: 12px; color: var(--mid-gray); }
+  .artist-work-count { font-size: 12px; color: var(--mid-gray); white-space: nowrap; margin-top: 4px; text-align: right; }
+
+  .artist-works {
+    display: none;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    background: var(--off-white);
+    border-top: 1px solid var(--border);
+  }
+  .artist-section.expanded .artist-works { display: grid; }
+
+  .chevron { font-size: 11px; color: var(--mid-gray); transition: transform 0.2s; margin-top: 6px; }
+  .artist-section.expanded .chevron { transform: rotate(180deg); }
+
+  /* WORK CARDS (compact) */
+  .work-card-sm {
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    transition: background 0.1s;
+    background: var(--white);
+  }
+  .work-card-sm:hover { background: var(--off-white); }
   .work-image-wrap { width: 100%; aspect-ratio: 4/3; overflow: hidden; background: var(--light-gray); display: flex; align-items: center; justify-content: center; }
   .work-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .work-image-placeholder { font-size: 11px; color: var(--mid-gray); text-transform: uppercase; letter-spacing: 0.06em; }
-  .work-info { padding: 12px 16px 16px; }
-  .work-artist { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-  .work-title { font-size: 13px; color: #444; margin-bottom: 8px; }
-  .work-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
-  .work-price { font-size: 13px; font-weight: 700; }
-  .status-badge { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border: 1px solid currentColor; transition: color 0.3s, border-color 0.3s; }
+  .work-info-sm { padding: 10px 14px 14px; }
+  .work-title-sm { font-size: 13px; color: #444; margin-bottom: 6px; }
+  .work-footer-sm { display: flex; align-items: center; justify-content: space-between; }
+  .work-price-sm { font-size: 12px; font-weight: 700; }
+  .status-badge { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border: 1px solid currentColor; transition: color 0.3s; }
   .status-available { color: var(--black); }
   .status-pending { color: var(--pending); }
   .status-sold { color: var(--sold); }
 
-  /* STATUS CHANGED FLASH */
   @keyframes statusFlash { 0%{opacity:0.2} 50%{opacity:1} 100%{opacity:1} }
   .status-changed { animation: statusFlash 0.6s ease-out; }
 
@@ -88,7 +104,6 @@
   .modal-price { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
   .modal-status { margin-bottom: 20px; }
 
-  /* PURCHASE */
   .purchase-section h3 { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 10px; }
   .purchase-options { display: flex; flex-direction: column; gap: 8px; }
   .btn { display: block; width: 100%; padding: 11px 16px; font-family: var(--font); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; border: 1px solid var(--black); transition: all 0.1s; text-align: center; text-decoration: none; }
@@ -99,7 +114,6 @@
   .btn-disabled { background: var(--light-gray); color: var(--mid-gray); border-color: var(--border); cursor: not-allowed; }
   .waitlist-note { font-size: 11px; color: var(--mid-gray); text-align: center; line-height: 1.6; margin-top: 8px; }
 
-  /* FORM */
   .commit-form { display: none; flex-direction: column; gap: 12px; }
   .commit-form.open { display: flex; }
   .form-section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); padding-bottom: 10px; border-bottom: 1px solid var(--border); }
@@ -112,14 +126,12 @@
   .checkbox-group label { font-size: 11px; color: var(--mid-gray); line-height: 1.6; }
   .form-back { background: none; border: none; font-size: 11px; color: var(--mid-gray); cursor: pointer; text-decoration: underline; text-align: left; padding: 0; font-family: var(--font); }
 
-  /* SUCCESS */
   .success-state { display: none; flex-direction: column; gap: 10px; padding: 16px 0; }
   .success-state.open { display: flex; }
   .success-title { font-size: 15px; font-weight: 700; }
   .success-body { font-size: 12px; color: #444; line-height: 1.6; }
 
-  /* MISC */
-  .grid-message { grid-column: 1 / -1; padding: 80px 24px; text-align: center; font-size: 12px; color: var(--mid-gray); text-transform: uppercase; letter-spacing: 0.06em; }
+  .page-message { padding: 80px 24px; text-align: center; font-size: 12px; color: var(--mid-gray); text-transform: uppercase; letter-spacing: 0.06em; }
   .error-banner { display: none; background: #fff8e1; border-bottom: 1px solid #ffe082; padding: 10px 24px; font-size: 12px; color: #7a5a00; }
   footer { border-top: 1px solid var(--border); padding: 24px; font-size: 12px; color: var(--mid-gray); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
 </style>
@@ -129,8 +141,8 @@
 <header>
   <a href="index.html" class="logo">Conners Conners</a>
   <nav>
-    <a href="index.html" class="active">Works</a>
-    <a href="artists.html">Artists</a>
+    <a href="index.html">Works</a>
+    <a href="artists.html" class="active">Artists</a>
   </nav>
 </header>
 
@@ -139,31 +151,12 @@
 </div>
 
 <section class="intro">
-  <p class="intro-eyebrow">Conners Conners Gallery</p>
-  <h1>Fundraiser 2026</h1>
-  <p>Browse and purchase works below. Scan any QR code at the event to open a work directly. All proceeds support Conners Conners.</p>
+  <p class="intro-eyebrow">Conners Conners Gallery — Fundraiser 2026</p>
+  <h1>Artists</h1>
 </section>
 
-<!-- SPONSORS SECTION — edit names/URLs below -->
-<section class="sponsors" id="sponsors-section">
-  <div class="sponsors-label">With thanks to our supporters</div>
-  <div class="sponsors-list" id="sponsors-list">
-    <!-- Sponsors are set in the SPONSORS array in the script below -->
-  </div>
-</section>
-
-<div class="filter-bar">
-  <div class="filter-pills">
-    <button class="pill active" data-filter="all">All</button>
-    <button class="pill" data-filter="available">Available</button>
-    <button class="pill" data-filter="pending">Pending</button>
-    <button class="pill" data-filter="sold">Sold</button>
-  </div>
-  <span class="work-count" id="work-count"></span>
-</div>
-
-<main class="gallery-grid" id="gallery-grid">
-  <div class="grid-message">Loading works…</div>
+<main id="artist-list">
+  <div class="page-message">Loading artists…</div>
 </main>
 
 <footer>
@@ -171,10 +164,10 @@
   <span id="footer-year"></span>
 </footer>
 
-<!-- MODAL -->
+<!-- MODAL (identical to index.html) -->
 <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true">
   <div class="modal">
-    <div class="modal-image-panel" id="modal-image-panel">
+    <div class="modal-image-panel">
       <span class="work-image-placeholder" id="modal-img-placeholder">No image</span>
       <img id="modal-img" src="" alt="" style="display:none">
     </div>
@@ -212,7 +205,7 @@
         </div>
         <div class="checkbox-group" id="transfer-checkbox-group" style="display:none">
           <input type="checkbox" id="f-commit-check">
-          <label for="f-commit-check" id="commit-label">I commit to transferring payment within 48 hours of receiving bank details from Conners Conners.</label>
+          <label for="f-commit-check">I commit to transferring payment within 48 hours of receiving bank details from Conners Conners.</label>
         </div>
         <button type="submit" class="btn btn-primary" id="submit-btn">Submit commitment</button>
         <button type="button" class="form-back" onclick="showPurchaseOptions()">← Back</button>
@@ -232,216 +225,148 @@
 </div>
 
 <script>
-// =====================================================================
-// CONFIGURATION — edit here
-// =====================================================================
 const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwXQRIeL7D7uVELVEhqsjO5BzHo3w-9KCN1ku_FNq5AvXWQQGGRRX6cb4KvkX80tclZ/exec';
-
-// Square payment links keyed by work id — add once Square is set up
-// e.g. 'w001': 'https://square.link/u/xxxxxxxx'
 const SQUARE_LINKS = {};
-
-// SPONSORS — add/remove/edit entries here
-// Set url to null if no website to link to
-const SPONSORS = [
-  { name: 'Sponsor Name', url: null },
-  { name: 'Sponsor Name', url: 'https://example.com' },
-  // Add more sponsors here
-];
-
-// How often to poll for status updates (milliseconds) — 30 seconds
 const POLL_INTERVAL = 30000;
 
-// =====================================================================
-// STATE
-// =====================================================================
-let allWorks = [], currentWork = null, currentFilter = 'all', commitType = '';
-let pollTimer = null;
+let allWorks = [], currentWork = null, commitType = '';
 
-// =====================================================================
-// INIT
-// =====================================================================
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('footer-year').textContent = new Date().getFullYear();
-  renderSponsors();
   loadWorks();
-
-  document.querySelectorAll('.pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentFilter = btn.dataset.filter;
-      renderGrid();
-    });
-  });
-
   document.getElementById('modal-overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('modal-overlay')) closeModal();
   });
   document.getElementById('modal-close').addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  // Start live polling
-  pollTimer = setInterval(pollStatus, POLL_INTERVAL);
+  setInterval(pollStatus, POLL_INTERVAL);
 });
 
-// =====================================================================
-// SPONSORS
-// =====================================================================
-function renderSponsors() {
-  const list = document.getElementById('sponsors-list');
-  const section = document.getElementById('sponsors-section');
-  if (!SPONSORS.length) { section.style.display = 'none'; return; }
-  list.innerHTML = SPONSORS.map(s =>
-    `<span class="sponsor-item">${s.url
-      ? `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.name)}</a>`
-      : esc(s.name)
-    }</span>`
-  ).join('');
-}
-
-// =====================================================================
-// LOAD WORKS (full render)
-// =====================================================================
 async function loadWorks() {
   try {
     const res = await fetch(SHEET_API_URL + '?action=getWorks');
     const data = await res.json();
     if (data.works && data.works.length > 0) {
       allWorks = data.works.filter(w => w.id && (w.artist || w.title));
-      renderGrid();
+      renderArtists();
       return;
     }
-  } catch (e) {
+  } catch(e) {
     document.getElementById('error-banner').style.display = 'block';
   }
-  // Fallback demo work
   allWorks = [{ id: 'w001', artist: 'Ry Haskings', title: 'Rolpanel Nova Kickback', status: 'available', imageUrl: '', price: '', representedBy: 'Conners Conners' }];
-  renderGrid();
+  renderArtists();
 }
 
-// =====================================================================
-// LIVE STATUS POLLING — updates badges in place, no full re-render
-// =====================================================================
+function renderArtists() {
+  const container = document.getElementById('artist-list');
+
+  // Group works by artist, preserving first-seen order
+  const artistMap = new Map();
+  allWorks.forEach(w => {
+    const name = w.artist || 'Unknown artist';
+    if (!artistMap.has(name)) artistMap.set(name, { name, representedBy: w.representedBy || '', works: [] });
+    artistMap.get(name).works.push(w);
+  });
+
+  const artists = Array.from(artistMap.values()).sort((a,b) => {
+    // Sort by last name
+    const lastName = n => n.split(' ').pop().toLowerCase();
+    return lastName(a.name).localeCompare(lastName(b.name));
+  });
+
+  if (!artists.length) {
+    container.innerHTML = '<div class="page-message">No artists found.</div>';
+    return;
+  }
+
+  container.innerHTML = artists.map(artist => {
+    const availCount = artist.works.filter(w => w.status === 'available').length;
+    const total = artist.works.length;
+    const countLabel = availCount === total
+      ? `${total} work${total !== 1 ? 's' : ''}`
+      : `${availCount} of ${total} work${total !== 1 ? 's' : ''} available`;
+
+    return `
+      <div class="artist-section" id="artist-${slugify(artist.name)}">
+        <div class="artist-header" onclick="toggleArtist('${slugify(artist.name)}')">
+          <div>
+            <div class="artist-name">${esc(artist.name)}</div>
+            ${artist.representedBy ? `<div class="artist-represented">Represented by ${esc(artist.representedBy)}</div>` : ''}
+          </div>
+          <div style="text-align:right">
+            <div class="artist-work-count">${countLabel}</div>
+            <div class="chevron">▾</div>
+          </div>
+        </div>
+        <div class="artist-works">
+          ${artist.works.map(w => `
+            <div class="work-card-sm" data-work-id="${w.id}" onclick="openWork('${w.id}')">
+              <div class="work-image-wrap">
+                ${w.imageUrl ? `<img src="${esc(w.imageUrl)}" alt="${esc(w.title||'')}" loading="lazy">` : '<span class="work-image-placeholder">No image</span>'}
+              </div>
+              <div class="work-info-sm">
+                <div class="work-title-sm">${esc(w.title||'Untitled')}</div>
+                <div class="work-footer-sm">
+                  <span class="work-price-sm">${w.price ? '$'+Number(w.price).toLocaleString() : ''}</span>
+                  <span class="status-badge status-${w.status||'available'}">${statusLabel(w.status)}</span>
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleArtist(slug) {
+  document.getElementById('artist-' + slug)?.classList.toggle('expanded');
+}
+
+// Live polling — same logic as index.html
 async function pollStatus() {
   try {
     const res = await fetch(SHEET_API_URL + '?action=getWorks');
     const data = await res.json();
     if (!data.works) return;
-
     const fresh = data.works.filter(w => w.id && (w.artist || w.title));
-
-    fresh.forEach(freshWork => {
-      const existing = allWorks.find(w => w.id === freshWork.id);
-      if (!existing) return;
-
-      if (existing.status !== freshWork.status) {
-        // Update local state
-        existing.status = freshWork.status;
-
-        // Update badge on the card in the grid
-        const card = document.querySelector(`[data-work-id="${freshWork.id}"]`);
-        if (card) {
-          const badge = card.querySelector('.status-badge');
-          if (badge) {
-            badge.className = `status-badge status-${freshWork.status}`;
-            badge.textContent = statusLabel(freshWork.status);
-            badge.classList.add('status-changed');
-            setTimeout(() => badge.classList.remove('status-changed'), 700);
-          }
-          // If the filter is active and this card no longer matches, fade it out
-          if (currentFilter !== 'all' && freshWork.status !== currentFilter) {
-            card.style.transition = 'opacity 0.5s';
-            card.style.opacity = '0.3';
-            card.style.pointerEvents = 'none';
-          }
-        }
-
-        // If this work is currently open in the modal, update that too
-        if (currentWork && currentWork.id === freshWork.id) {
-          currentWork.status = freshWork.status;
-          document.getElementById('modal-status').innerHTML =
-            `<span class="status-badge status-${freshWork.status}">${statusLabel(freshWork.status)}</span>`;
-          // If it just sold, update purchase options
-          if (freshWork.status === 'sold') {
-            document.getElementById('purchase-section').style.display = 'none';
-            document.getElementById('commit-form').classList.remove('open');
-            document.getElementById('sold-state').style.display = 'block';
-          }
+    fresh.forEach(fw => {
+      const existing = allWorks.find(w => w.id === fw.id);
+      if (!existing || existing.status === fw.status) return;
+      existing.status = fw.status;
+      document.querySelectorAll(`[data-work-id="${fw.id}"] .status-badge`).forEach(badge => {
+        badge.className = `status-badge status-${fw.status}`;
+        badge.textContent = statusLabel(fw.status);
+        badge.classList.add('status-changed');
+        setTimeout(() => badge.classList.remove('status-changed'), 700);
+      });
+      if (currentWork && currentWork.id === fw.id) {
+        currentWork.status = fw.status;
+        document.getElementById('modal-status').innerHTML = `<span class="status-badge status-${fw.status}">${statusLabel(fw.status)}</span>`;
+        if (fw.status === 'sold') {
+          document.getElementById('purchase-section').style.display = 'none';
+          document.getElementById('commit-form').classList.remove('open');
+          document.getElementById('sold-state').style.display = 'block';
         }
       }
     });
-
-    // If filter is 'all', also catch any new works added since last load
-    const freshIds = fresh.map(w => w.id);
-    const existingIds = allWorks.map(w => w.id);
-    const hasNew = freshIds.some(id => !existingIds.includes(id));
-    if (hasNew) {
-      allWorks = fresh;
-      renderGrid();
-    }
-
-  } catch(e) {
-    // Silent fail — polling, not critical
-  }
+  } catch(e) {}
 }
 
-// =====================================================================
-// RENDER GRID
-// =====================================================================
-function renderGrid() {
-  const grid = document.getElementById('gallery-grid');
-  const filtered = currentFilter === 'all' ? allWorks : allWorks.filter(w => w.status === currentFilter);
-  document.getElementById('work-count').textContent = filtered.length + ' work' + (filtered.length !== 1 ? 's' : '');
-  if (!filtered.length) { grid.innerHTML = '<div class="grid-message">No works match this filter.</div>'; return; }
-  grid.innerHTML = filtered.map(w => `
-    <article class="work-card" data-work-id="${w.id}" onclick="openWork('${w.id}')">
-      <div class="work-image-wrap">
-        ${w.imageUrl ? `<img src="${esc(w.imageUrl)}" alt="${esc(w.title||'')}" loading="lazy">` : '<span class="work-image-placeholder">No image</span>'}
-      </div>
-      <div class="work-info">
-        <div class="work-artist">${esc(w.artist||'Unknown artist')}</div>
-        <div class="work-title">${esc(w.title||'Untitled')}</div>
-        <div class="work-footer">
-          <span class="work-price">${w.price ? '$'+Number(w.price).toLocaleString() : ''}</span>
-          <span class="status-badge status-${w.status||'available'}">${statusLabel(w.status)}</span>
-        </div>
-      </div>
-    </article>`).join('');
-}
-
-// =====================================================================
-// MODAL
-// =====================================================================
 function openWork(id) {
   currentWork = allWorks.find(w => w.id === id);
   if (!currentWork) return;
-
   const img = document.getElementById('modal-img');
   const ph = document.getElementById('modal-img-placeholder');
-  if (currentWork.imageUrl) {
-    img.src = currentWork.imageUrl; img.alt = currentWork.title||'';
-    img.style.display = 'block'; ph.style.display = 'none';
-  } else {
-    img.style.display = 'none'; ph.style.display = 'block';
-  }
-
-  document.getElementById('modal-artist').textContent = currentWork.artist || 'Unknown artist';
-
-  // Represented by
+  if (currentWork.imageUrl) { img.src = currentWork.imageUrl; img.alt = currentWork.title||''; img.style.display='block'; ph.style.display='none'; }
+  else { img.style.display='none'; ph.style.display='block'; }
+  document.getElementById('modal-artist').textContent = currentWork.artist||'Unknown artist';
   const repEl = document.getElementById('modal-represented');
-  if (currentWork.representedBy) {
-    repEl.textContent = 'Represented by ' + currentWork.representedBy;
-    repEl.style.display = 'block';
-  } else {
-    repEl.style.display = 'none';
-  }
-
-  document.getElementById('modal-title').textContent = currentWork.title || 'Untitled';
+  if (currentWork.representedBy) { repEl.textContent = 'Represented by ' + currentWork.representedBy; repEl.style.display='block'; }
+  else { repEl.style.display='none'; }
+  document.getElementById('modal-title').textContent = currentWork.title||'Untitled';
   document.getElementById('modal-meta').innerHTML = [currentWork.medium, currentWork.dimensions, currentWork.year].filter(Boolean).join('<br>');
-  document.getElementById('modal-price').textContent = currentWork.price ? '$' + Number(currentWork.price).toLocaleString() : '';
+  document.getElementById('modal-price').textContent = currentWork.price ? '$'+Number(currentWork.price).toLocaleString() : '';
   document.getElementById('modal-status').innerHTML = `<span class="status-badge status-${currentWork.status||'available'}">${statusLabel(currentWork.status)}</span>`;
-
   showPurchaseOptions();
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -459,11 +384,7 @@ function showPurchaseOptions() {
   document.getElementById('success-state').classList.remove('open');
   document.getElementById('sold-state').style.display = 'none';
   const s = currentWork?.status || 'available';
-  if (s === 'sold') {
-    document.getElementById('purchase-section').style.display = 'none';
-    document.getElementById('sold-state').style.display = 'block';
-    return;
-  }
+  if (s === 'sold') { document.getElementById('purchase-section').style.display='none'; document.getElementById('sold-state').style.display='block'; return; }
   const pend = s === 'pending';
   const sq = SQUARE_LINKS[currentWork?.id];
   document.getElementById('btn-square').className = pend ? 'btn btn-disabled' : 'btn btn-primary';
@@ -484,12 +405,11 @@ function showForm(type) {
   document.getElementById('commit-form').classList.add('open');
   const pend = currentWork?.status === 'pending';
   document.getElementById('form-title').textContent = pend
-    ? (type === 'transfer' ? 'Join waitlist — bank transfer' : 'Join waitlist — pay at desk')
-    : (type === 'transfer' ? 'Commit — bank transfer' : 'Commit — pay at desk');
+    ? (type==='transfer' ? 'Join waitlist — bank transfer' : 'Join waitlist — pay at desk')
+    : (type==='transfer' ? 'Commit — bank transfer' : 'Commit — pay at desk');
   const cbg = document.getElementById('transfer-checkbox-group');
-  const cb = document.getElementById('f-commit-check');
-  cbg.style.display = type === 'transfer' ? 'flex' : 'none';
-  cb.required = type === 'transfer';
+  cbg.style.display = type==='transfer' ? 'flex' : 'none';
+  document.getElementById('f-commit-check').required = type==='transfer';
 }
 
 async function submitCommit(e) {
@@ -506,22 +426,23 @@ async function submitCommit(e) {
   };
   let success = false;
   try {
-    const res = await fetch(SHEET_API_URL, { method: 'POST', headers: {'Content-Type':'text/plain'}, body: JSON.stringify(payload) });
+    const res = await fetch(SHEET_API_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(payload) });
     const data = await res.json();
     success = data.success;
-    if (data.works) { allWorks = data.works.filter(w => w.id && (w.artist || w.title)); renderGrid(); }
+    if (data.works) { allWorks = data.works.filter(w => w.id && (w.artist||w.title)); renderArtists(); }
   } catch(err) { console.error(err); }
   document.getElementById('commit-form').classList.remove('open');
   document.getElementById('success-state').classList.add('open');
   document.getElementById('success-body').innerHTML = success
-    ? (commitType === 'transfer'
+    ? (commitType==='transfer'
         ? `Your commitment for <strong>${esc(currentWork.title||'this work')}</strong> has been received. Conners Conners will be in touch with bank details.`
         : `Your commitment to pay at the desk for <strong>${esc(currentWork.title||'this work')}</strong> has been received.`)
     : 'There was an issue submitting. Please speak to a volunteer.';
-  e.target.reset(); btn.disabled = false; btn.textContent = 'Submit commitment';
+  e.target.reset(); btn.disabled=false; btn.textContent='Submit commitment';
 }
 
-function statusLabel(s) { return s === 'sold' ? 'Sold' : s === 'pending' ? 'Pending' : 'Available'; }
+function slugify(s) { return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-'); }
+function statusLabel(s) { return s==='sold'?'Sold':s==='pending'?'Pending':'Available'; }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
 </body>
