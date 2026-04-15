@@ -177,8 +177,7 @@
       <div class="purchase-section" id="purchase-section">
         <h3>Purchase this work</h3>
         <div class="purchase-options">
-          <button class="btn btn-primary" id="btn-square" onclick="openSquare()">Pay online via Square</button>
-          <button class="btn btn-outline" id="btn-transfer" onclick="showForm('transfer')">Commit — bank transfer</button>
+          <button class="btn btn-primary" id="btn-transfer" onclick="showForm('transfer')">Commit — bank transfer</button>
           <button class="btn btn-outline" id="btn-desk" onclick="showForm('desk')">Commit — pay at desk</button>
         </div>
       </div>
@@ -226,7 +225,6 @@
 
 <script>
 const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwXQRIeL7D7uVELVEhqsjO5BzHo3w-9KCN1ku_FNq5AvXWQQGGRRX6cb4KvkX80tclZ/exec';
-const SQUARE_LINKS = {};
 const POLL_INTERVAL = 15000;
 const SPONSORS = [
   { name: 'Sponsor Name', url: null },
@@ -376,17 +374,8 @@ function showPurchaseOptions() {
   const s = currentWork?.status || 'available';
   if (s === 'sold') { document.getElementById('purchase-section').style.display='none'; document.getElementById('sold-state').style.display='block'; return; }
   const pend = s === 'pending';
-  const sq = SQUARE_LINKS[currentWork?.id];
-  document.getElementById('btn-square').className = pend ? 'btn btn-disabled' : 'btn btn-primary';
-  document.getElementById('btn-square').textContent = pend ? 'Pay online (pending sale)' : (sq ? 'Pay online via Square' : 'Pay online via Square (available on the night)');
   document.getElementById('btn-transfer').textContent = pend ? 'Join waitlist — bank transfer' : 'Commit — bank transfer';
   document.getElementById('btn-desk').textContent = pend ? 'Join waitlist — pay at desk' : 'Commit — pay at desk';
-}
-
-function openSquare() {
-  const link = SQUARE_LINKS[currentWork?.id];
-  if (link) window.open(link, '_blank');
-  else alert('Online payment will be available from opening night. Please use the commit form or pay at the desk.');
 }
 
 function showForm(type) {

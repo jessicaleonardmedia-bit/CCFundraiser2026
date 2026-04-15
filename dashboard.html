@@ -110,6 +110,8 @@
   .action-btn-confirm:hover { background: var(--available-bg); }
   .action-btn-expire { border-color: var(--pending); color: var(--pending); }
   .action-btn-expire:hover { background: var(--pending-bg); }
+  .action-btn-withdraw { border-color: var(--mid-gray); color: var(--mid-gray); }
+  .action-btn-withdraw:hover { background: var(--light-gray); }
 
   /* CONFIRM MODAL */
   .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
@@ -375,7 +377,8 @@ function buildRow(w) {
             <div class="queue-buyer-contact">${esc(b.email)}<br>${esc(b.phone)}${b.timestamp?'<br>'+fmt(b.timestamp):''}${b.vipOptIn==='true'||b.vipOptIn===true?' · VIP ✓':''}</div>
             ${i===0 ? `<div class="queue-actions">
               <button class="action-btn action-btn-confirm" onclick="confirmAction('confirmSold','${w.id}','','Mark as sold to ${escA(b.name)}?','This marks the work as sold and clears the queue.')">✓ Confirm sold</button>
-              <button class="action-btn action-btn-expire" onclick="confirmAction('expireFirst','${w.id}','','Expire this commitment?','${escA(b.name)} will be removed and the next person promoted.')">Expire</button>
+              <button class="action-btn action-btn-expire" onclick="confirmAction('expireFirst','${w.id}','','Expire this commitment?','${escA(b.name)} did not complete payment. They will be removed and the next person promoted.')">Expire</button>
+              <button class="action-btn action-btn-withdraw" onclick="confirmAction('withdrawFirst','${w.id}','','Withdraw commitment for ${escA(b.name)}?','${escA(b.name)} has requested to withdraw. They will be removed and the next person promoted.')">Withdraw</button>
             </div>` : ''}
           </div>
           <span class="queue-buyer-type">${b.paymentType==='transfer'?'Transfer':'At desk'}</span>
