@@ -354,16 +354,20 @@ function buildRow(w) {
   const requiresAdmin    = s === 'sold'; // reversing sold → anything needs admin
 
   const statusBtns = `
-    <button class="status-btn status-btn-available" ${!canMarkAvailable ? 'disabled' : ''}
-      onclick="${requiresAdmin ? `confirmAdminAction('setStatus','${w.id}','available','Mark as available?','This will reverse a sold status and requires the admin password.')` : `confirmAction('setStatus','${w.id}','available','Mark as available?','Work will be listed as available.')`}">
+    <button class="status-btn status-btn-available"
+      data-action="${requiresAdmin ? 'adminSetStatus' : 'setStatus'}"
+      data-work-id="${w.id}" data-new-status="available"
+      ${!canMarkAvailable ? 'disabled' : ''}>
       Mark available
     </button>
-    <button class="status-btn status-btn-pending" ${!canMarkPending ? 'disabled' : ''}
-      onclick="confirmAction('setStatus','${w.id}','pending','Mark as pending?','Work will show as pending purchase.')">
+    <button class="status-btn status-btn-pending"
+      data-action="setStatus" data-work-id="${w.id}" data-new-status="pending"
+      ${!canMarkPending ? 'disabled' : ''}>
       Mark pending
     </button>
-    <button class="status-btn status-btn-sold" ${!canMarkSold ? 'disabled' : ''}
-      onclick="confirmAction('setStatus','${w.id}','sold','Mark as sold?','Use this for Square terminal payments on the night.')">
+    <button class="status-btn status-btn-sold"
+      data-action="setStatus" data-work-id="${w.id}" data-new-status="sold"
+      ${!canMarkSold ? 'disabled' : ''}>
       Mark sold
     </button>`;
 
@@ -484,6 +488,22 @@ function closeConfirm() {
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeConfirm(); closeQRPanel(); } });
+
+// Delegated handler for status buttons (avoids inline onclick quote issues)
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn || btn.disabled) return;
+  const action    = btn.dataset.action;
+  const workId    = btn.dataset.workId;
+  const newStatus = btn.dataset.newStatus;
+  if (action === 'setStatus') {
+    const titles = { available: 'Mark as available?', pending: 'Mark as pending?', sold: 'Mark as sold?' };
+    const bodies = { available: 'Work will be listed as available.', pending: 'Work will show as pending purchase.', sold: 'Use this for Square terminal payments on the night.' };
+    confirmAction('setStatus', workId, newStatus, titles[newStatus], bodies[newStatus]);
+  } else if (action === 'adminSetStatus') {
+    confirmAdminAction('setStatus', workId, newStatus, 'Mark as available?', 'This will reverse a sold status and requires the admin password.');
+  }
+});
 
 // ---- QR CODES ----
 function openQRPanel() {
