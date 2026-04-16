@@ -114,9 +114,9 @@
   .action-btn-withdraw:hover { background: var(--light-gray); }
 
   /* CONFIRM MODAL */
-  .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+  .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 400; align-items: center; justify-content: center; padding: 20px; }
   .confirm-overlay.open { display: flex; }
-  .confirm-box { background: var(--white); border: 1px solid var(--border); padding: 32px 28px; max-width: 380px; width: 100%; }
+  .confirm-box { background: var(--white); border: 1px solid var(--border); padding: 32px 28px; max-width: 380px; width: 100%; position: relative; z-index: 401; }
   .confirm-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
   .confirm-box p { font-size: 12px; color: #444; line-height: 1.6; margin-bottom: 8px; }
   .confirm-input-wrap { margin-bottom: 16px; }
@@ -237,8 +237,8 @@
       <div style="font-size:11px;color:var(--danger);margin-top:6px;display:none" id="admin-pwd-error">Incorrect admin password.</div>
     </div>
     <div class="confirm-actions">
-      <button class="btn-full btn-confirm-yes" onclick="executePending()">Confirm</button>
-      <button class="btn-full btn-confirm-no" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-full btn-confirm-yes" id="confirm-yes-btn">Confirm</button>
+      <button class="btn-full btn-confirm-no" id="confirm-no-btn">Cancel</button>
     </div>
   </div>
 </div>
@@ -488,10 +488,12 @@ function closeConfirm() {
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeConfirm(); closeQRPanel(); } });
+document.getElementById('confirm-yes-btn').addEventListener('click', executePending);
+document.getElementById('confirm-no-btn').addEventListener('click', closeConfirm);
 
 // Delegated handler for status buttons (avoids inline onclick quote issues)
-document.addEventListener('click', e => {
-  const btn = e.target.closest('[data-action]');
+document.getElementById('work-list') && document.addEventListener('click', e => {
+  const btn = e.target.closest('.status-btn[data-action]');
   if (!btn || btn.disabled) return;
   const action    = btn.dataset.action;
   const workId    = btn.dataset.workId;
