@@ -147,6 +147,27 @@
   .pulse { display: inline-block; width: 6px; height: 6px; background: var(--available); border-radius: 50%; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
+  /* TIMER WARNINGS */
+  .timer-warnings { padding: 0 24px 4px; display: flex; flex-direction: column; gap: 8px; }
+  .timer-warning-banner {
+    background: var(--pending-bg); border: 1px solid var(--pending);
+    padding: 12px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .timer-warning-banner.paused { background: var(--off-white); border-color: var(--border); }
+  .timer-warning-text { font-size: 12px; color: var(--pending); flex: 1; min-width: 200px; font-weight: 700; }
+  .timer-warning-banner.paused .timer-warning-text { color: var(--mid-gray); }
+  .timer-countdown { font-family: var(--font); font-size: 11px; color: var(--pending); white-space: nowrap; }
+  .timer-btn { font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 5px 10px; border: 1px solid; cursor: pointer; background: var(--white); transition: all 0.1s; white-space: nowrap; }
+  .timer-btn-extend { border-color: var(--available); color: var(--available); }
+  .timer-btn-extend:hover { background: var(--available-bg); }
+  .timer-btn-pause { border-color: var(--pending); color: var(--pending); }
+  .timer-btn-pause:hover { background: var(--pending-bg); }
+  .timer-btn-unpause { border-color: var(--black); color: var(--black); }
+  .timer-btn-unpause:hover { background: var(--light-gray); }
+
+  /* PROMOTED INDICATOR on queue item */
+  .promoted-badge { font-size: 10px; background: var(--available-bg); color: var(--available); border: 1px solid var(--available); padding: 2px 7px; white-space: nowrap; margin-left: 6px; }
+
   @media print {
     .dashboard > *:not(.qr-overlay) { display: none !important; }
     .qr-overlay { position: static; display: block !important; background: none; padding: 0; }
@@ -215,6 +236,8 @@
     <button class="close-all-btn" onclick="confirmCloseAll()">⚠ Close all sales</button>
   </div>
 
+  <div class="timer-warnings" id="timer-warnings"></div>
+
   <div class="work-list" id="work-list">
     <p style="font-size:12px;color:var(--mid-gray);padding:20px 0">Loading works…</p>
   </div>
@@ -267,7 +290,7 @@ const AUTO_REFRESH = 15000;
 // Public gallery base URL — update if your GitHub Pages URL changes
 const GALLERY_URL = 'https://jessicaleonardmedia-bit.github.io/CCFundraiser2026/index.html';
 
-let allWorks = [], refreshTimer = null, pendingAction = null, isAdmin = false;
+let allWorks = [], refreshTimer = null, pendingAction = null, isAdmin = false, allTimers = [];
 
 // ---- AUTH ----
 function attemptLogin() {
@@ -301,7 +324,8 @@ async function loadWorks() {
     const data = await res.json();
     if (data.works) {
       allWorks = data.works.filter(w => w.id && (w.artist || w.title));
-      renderList(); updateStats();
+      allTimers = data.timers || [];
+      renderList(); updateStats(); renderTimerWarnings();
       document.getElementById('last-updated').textContent =
         'Updated ' + new Date().toLocaleTimeString('en-AU', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
     }
@@ -318,7 +342,8 @@ async function sendAction(payload) {
     const data = await res.json();
     if (data.works) {
       allWorks = data.works.filter(w => w.id && (w.artist || w.title));
-      renderList(); updateStats();
+      allTimers = data.timers || allTimers;
+      renderList(); updateStats(); renderTimerWarnings();
     }
     return data;
   } catch(e) { console.error('Action failed', e); return { success: false }; }
@@ -377,7 +402,7 @@ function buildRow(w) {
         <div class="queue-item">
           <div class="queue-position ${i===0?'first':''}">${i+1}</div>
           <div>
-            <div class="queue-buyer-name">${esc(b.name)}</div>
+            <div class="queue-buyer-name">${esc(b.name)}${i===0 && allTimers.find(t=>t.workId===w.id && !t.warningShown && !t.paused && t.minLeft <= 30 && t.minLeft > 0) ? `<span class="promoted-badge">Email sent · ${allTimers.find(t=>t.workId===w.id).minLeft}m left</span>` : ''}</div>
             <div class="queue-buyer-contact">${esc(b.email)}<br>${esc(b.phone)}${b.timestamp?'<br>'+fmt(b.timestamp):''}${b.vipOptIn==='true'||b.vipOptIn===true?' · VIP ✓':''}</div>
             ${i===0 ? `<div class="queue-actions">
               <button class="action-btn action-btn-confirm" onclick="confirmAction('confirmSold','${w.id}','','Mark as sold to ${escA(b.name)}?','This marks the work as sold and clears the queue.')">✓ Confirm sold</button>
@@ -548,6 +573,43 @@ function openQRPanel() {
 }
 
 function closeQRPanel() { document.getElementById('qr-overlay').classList.remove('open'); }
+
+// ---- TIMER WARNINGS ----
+function renderTimerWarnings() {
+  const container = document.getElementById('timer-warnings');
+  if (!allTimers.length) { container.innerHTML = ''; return; }
+
+  const warnings = allTimers.filter(t => t.warningShown || t.paused);
+  if (!warnings.length) { container.innerHTML = ''; return; }
+
+  container.innerHTML = warnings.map(t => {
+    const isPaused = t.paused;
+    const canExtend = !t.extended && !isPaused;
+    const timeText = isPaused ? 'Timer paused' : `${t.minLeft} min remaining`;
+
+    return `<div class="timer-warning-banner ${isPaused ? 'paused' : ''}">
+      <div class="timer-warning-text">
+        ${isPaused ? '⏸ Paused:' : '⚠ Expiring soon:'} ${esc(t.buyerName)} — ${esc(t.workTitle)}
+      </div>
+      <span class="timer-countdown">${timeText}</span>
+      ${canExtend ? `<button class="timer-btn timer-btn-extend" onclick="timerExtend('${t.workId}','${t.queueTimestamp}')">+5 min</button>` : ''}
+      ${!isPaused ? `<button class="timer-btn timer-btn-pause" onclick="timerPause('${t.workId}','${t.queueTimestamp}')">Pause</button>` : ''}
+      ${isPaused ? `<button class="timer-btn timer-btn-unpause" onclick="timerUnpause('${t.workId}','${t.queueTimestamp}')">Resume</button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function timerExtend(workId, queueTimestamp) {
+  await sendAction({ action: 'extendTimer', workId, queueTimestamp });
+}
+
+async function timerPause(workId, queueTimestamp) {
+  await sendAction({ action: 'pauseTimer', workId, queueTimestamp });
+}
+
+async function timerUnpause(workId, queueTimestamp) {
+  await sendAction({ action: 'unpauseTimer', workId, queueTimestamp });
+}
 
 // ---- HELPERS ----
 function statusLabel(s) { return s==='sold'?'Sold':s==='pending'?'Pending':'Available'; }
