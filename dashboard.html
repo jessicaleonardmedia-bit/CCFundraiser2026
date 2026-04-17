@@ -221,7 +221,7 @@
     <div class="stat"><span class="stat-value" id="stat-available">—</span><span class="stat-label">Available</span></div>
     <div class="stat"><span class="stat-value" id="stat-pending" style="color:var(--pending)">—</span><span class="stat-label">Pending</span></div>
     <div class="stat"><span class="stat-value" id="stat-sold" style="color:var(--mid-gray)">—</span><span class="stat-label">Sold</span></div>
-    <div class="stat"><span class="stat-value" id="stat-revenue">—</span><span class="stat-label">Revenue</span></div>
+
   </div>
 
   <div class="controls">
@@ -448,8 +448,7 @@ function updateStats() {
   document.getElementById('stat-available').textContent = allWorks.filter(w=>w.status==='available').length;
   document.getElementById('stat-pending').textContent = allWorks.filter(w=>w.status==='pending').length;
   document.getElementById('stat-sold').textContent = allWorks.filter(w=>w.status==='sold').length;
-  const rev = allWorks.filter(w=>w.status==='sold').reduce((s,w)=>s+Number(w.price||0),0);
-  document.getElementById('stat-revenue').textContent = rev > 0 ? '$'+rev.toLocaleString() : '—';
+
 }
 
 // ---- CONFIRM (standard) ----
