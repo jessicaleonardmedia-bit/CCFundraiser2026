@@ -128,6 +128,22 @@
 
 <div class="error-banner" id="error-banner">Unable to load works — check your connection and refresh.</div>
 
+<div id="mode-banner" style="display:none;background:#fdf3e3;border-bottom:1px solid #e8c97a;padding:12px 24px;font-size:13px;color:#7a5a00;text-align:center"></div>
+
+<div id="countdown-section" style="display:none;background:#0a0a0a;color:#fff;padding:16px 24px;text-align:center">
+  <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;margin-bottom:4px">Gallery opens</div>
+  <div id="countdown-timer" style="font-size:22px;font-weight:700;letter-spacing:0.04em">Opening soon</div>
+</div>
+
+<!-- VIP CODE ENTRY (shown on standard URL during soft launch) -->
+<div id="vip-code-section" style="display:none;padding:12px 24px;background:#f8f8f8;border-bottom:1px solid #e0e0e0;text-align:center">
+  <span style="font-size:12px;color:#999;margin-right:8px">Have a VIP code?</span>
+  <input type="text" id="vip-code-input" placeholder="Enter code" style="border:1px solid #e0e0e0;padding:5px 10px;font-size:12px;width:120px;font-family:inherit">
+  <button onclick="verifyVipCode()" style="border:1px solid #0a0a0a;background:#0a0a0a;color:#fff;padding:5px 12px;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;margin-left:6px;font-family:inherit">Unlock</button>
+  <div id="vip-code-error" style="display:none;font-size:11px;color:#b03a3a;margin-top:6px">Code not recognised.</div>
+</div>
+<div id="vip-access-granted" style="display:none;padding:8px 24px;background:#edf5f0;border-bottom:1px solid #9FE1CB;text-align:center;font-size:12px;color:#0F6E56">VIP access unlocked — you can now make offers on works.</div>
+
 <section class="intro">
   <p class="intro-eyebrow">Conners Conners Gallery</p>
   <h1>Fundraiser 2026</h1>
@@ -219,6 +235,33 @@
       <div id="sold-state" style="display:none">
         <p class="waitlist-note">This work has been sold.</p>
       </div>
+
+      <!-- VIP OFFER FORM (visible on ?vip=true during soft launch) -->
+      <div id="vip-offer-section" style="display:none">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#999;margin-bottom:10px">Make an offer</div>
+        <p style="font-size:12px;color:#444;margin-bottom:14px;line-height:1.6">You have exclusive early access to make an offer before this work opens to the public. The curators will review all offers before opening.</p>
+        <form onsubmit="submitVipOffer(event)" style="display:flex;flex-direction:column;gap:12px">
+          <div class="form-group">
+            <label class="form-label">Your offer ($)</label>
+            <input type="number" id="vip-amount" required min="1" placeholder="Enter amount" style="border:1px solid #e0e0e0;padding:9px 12px;font-size:14px;font-family:inherit;width:100%;outline:none">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Full name</label>
+            <input type="text" id="vip-name" required placeholder="Your name" style="border:1px solid #e0e0e0;padding:9px 12px;font-size:14px;font-family:inherit;width:100%;outline:none">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" id="vip-email" required placeholder="your@email.com" style="border:1px solid #e0e0e0;padding:9px 12px;font-size:14px;font-family:inherit;width:100%;outline:none">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" id="vip-phone" required placeholder="04xx xxx xxx" style="border:1px solid #e0e0e0;padding:9px 12px;font-size:14px;font-family:inherit;width:100%;outline:none">
+          </div>
+          <p style="font-size:11px;color:#999;line-height:1.6">No payment is required now. If your offer is accepted, you'll receive an email and SMS with payment details.</p>
+          <button type="submit" id="vip-submit-btn" class="btn btn-primary">Submit offer</button>
+        </form>
+      </div>
+
     </div>
   </div>
 </div>
@@ -232,10 +275,19 @@ const SPONSORS = [
 ];
 
 let allWorks = [], currentWork = null, currentFilter = 'all', commitType = '';
+let galleryMode = 'soft_launch', isVip = false, countdownTimer = null;
+
+// Detect VIP mode from URL param
+const urlParams = new URLSearchParams(window.location.search);
+isVip = urlParams.get('vip') === 'true';
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('footer-year').textContent = new Date().getFullYear();
   renderSponsors();
+  // Show VIP code fallback on standard URL during soft launch
+  if (!isVip) {
+    // Will show after mode is loaded — applyGalleryMode handles this
+  }
   loadWorks();
   document.querySelectorAll('.pill').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -268,8 +320,8 @@ async function loadWorks() {
     const data = await res.json();
     if (data.works && data.works.length > 0) {
       allWorks = data.works.filter(w => w.id && (w.artist || w.title));
+      if (data.mode) { galleryMode = data.mode; applyGalleryMode(); }
       renderGrid();
-      // Check for hash deep-link after load
       handleHashLink();
       return;
     }
@@ -277,6 +329,52 @@ async function loadWorks() {
   allWorks = [{ id: 'w001', artist: 'Ry Haskings', title: 'Rolpanel Nova Kickback', status: 'available', imageUrl: '', price: '', representedBy: 'Conners Conners' }];
   renderGrid();
   handleHashLink();
+}
+
+function applyGalleryMode() {
+  const isSoft   = galleryMode === 'soft_launch';
+  const isClosed = galleryMode === 'closed';
+  const banner   = document.getElementById('mode-banner');
+  const countdownEl = document.getElementById('countdown-section');
+
+  const vipCodeSection = document.getElementById('vip-code-section');
+  if (isSoft) {
+    banner.style.display = 'block';
+    banner.textContent = isVip
+      ? 'VIP preview — browse the collection and make an offer before it opens to the public.'
+      : 'The gallery is not yet open for purchases. Check back on the night!';
+    if (countdownEl) countdownEl.style.display = 'block';
+    if (vipCodeSection) vipCodeSection.style.display = isVip ? 'none' : 'block';
+    startCountdown();
+  } else if (isClosed) {
+    banner.style.display = 'block';
+    banner.textContent = 'Sales are now closed. Thank you for joining us!';
+    if (countdownEl) countdownEl.style.display = 'none';
+  } else {
+    banner.style.display = 'none';
+    if (countdownEl) countdownEl.style.display = 'none';
+    if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+  }
+}
+
+function startCountdown() {
+  const el = document.getElementById('countdown-timer');
+  if (!el) return;
+  if (countdownTimer) clearInterval(countdownTimer);
+  function tick() {
+    // Countdown target stored in meta tag — set by admin via scheduled launch time
+    // For now show a placeholder until launch time is available from Config
+    el.textContent = 'Opening soon';
+  }
+  tick();
+  countdownTimer = setInterval(tick, 1000);
+}
+
+// Price visibility — hidden in soft launch, or if work has active VIP offer
+function showPrice(work) {
+  if (galleryMode === 'soft_launch') return false;
+  if (work.hasVipOffer) return false;
+  return true;
 }
 
 // Deep linking — open modal if URL has #w001 etc.
@@ -290,6 +388,7 @@ async function pollStatus() {
     const res = await fetch(SHEET_API_URL + '?action=getWorks');
     const data = await res.json();
     if (!data.works) return;
+    if (data.mode && data.mode !== galleryMode) { galleryMode = data.mode; applyGalleryMode(); renderGrid(); }
     const fresh = data.works.filter(w => w.id && (w.artist || w.title));
     fresh.forEach(fw => {
       const existing = allWorks.find(w => w.id === fw.id);
@@ -331,7 +430,7 @@ function renderGrid() {
         <div class="work-title">${esc(w.title||'Untitled')}</div>
         ${w.representedBy ? `<div class="work-represented">Rep. ${esc(w.representedBy)}</div>` : ''}
         <div class="work-footer">
-          <span class="work-price">${w.price ? '$'+Number(w.price).toLocaleString() : ''}</span>
+          <span class="work-price">${showPrice(w) && w.price ? '$'+Number(w.price).toLocaleString() : (galleryMode==='soft_launch' ? '' : '')}</span>
           <span class="status-badge status-${w.status||'available'}">${statusLabel(w.status)}</span>
         </div>
       </div>
@@ -350,9 +449,9 @@ function openWork(id) {
   if (currentWork.representedBy) { repEl.textContent = 'Represented by ' + currentWork.representedBy; repEl.style.display='block'; } else { repEl.style.display='none'; }
   document.getElementById('modal-title').textContent = currentWork.title||'Untitled';
   document.getElementById('modal-meta').innerHTML = [currentWork.medium, currentWork.dimensions, currentWork.year].filter(Boolean).join('<br>');
-  document.getElementById('modal-price').textContent = currentWork.price ? '$'+Number(currentWork.price).toLocaleString() : '';
+  const priceEl = document.getElementById('modal-price');
+  priceEl.textContent = showPrice(currentWork) && currentWork.price ? '$'+Number(currentWork.price).toLocaleString() : '';
   document.getElementById('modal-status').innerHTML = `<span class="status-badge status-${currentWork.status||'available'}">${statusLabel(currentWork.status)}</span>`;
-  // Update URL hash for deep linking
   history.replaceState(null, '', '#' + currentWork.id);
   showPurchaseOptions();
   document.getElementById('modal-overlay').classList.add('open');
@@ -371,8 +470,38 @@ function showPurchaseOptions() {
   document.getElementById('commit-form').classList.remove('open');
   document.getElementById('success-state').classList.remove('open');
   document.getElementById('sold-state').style.display = 'none';
+  const vipFormEl = document.getElementById('vip-offer-section');
+  if (vipFormEl) vipFormEl.style.display = 'none';
+
   const s = currentWork?.status || 'available';
-  if (s === 'sold') { document.getElementById('purchase-section').style.display='none'; document.getElementById('sold-state').style.display='block'; return; }
+
+  // Closed gallery
+  if (galleryMode === 'closed') {
+    document.getElementById('purchase-section').style.display = 'none';
+    document.getElementById('sold-state').style.display = 'block';
+    document.getElementById('sold-state').innerHTML = '<p style="color:var(--mid-gray);font-size:13px">Sales are now closed. Thank you!</p>';
+    return;
+  }
+
+  // Soft launch — VIPs can make offers, others see coming soon
+  if (galleryMode === 'soft_launch') {
+    document.getElementById('purchase-section').style.display = 'none';
+    if (isVip && s !== 'sold') {
+      if (vipFormEl) vipFormEl.style.display = 'block';
+    } else {
+      document.getElementById('sold-state').style.display = 'block';
+      document.getElementById('sold-state').innerHTML = '<p style="color:var(--mid-gray);font-size:13px">Purchases open on the night. See you there!</p>';
+    }
+    return;
+  }
+
+  // Live — standard flow
+  if (s === 'sold') {
+    document.getElementById('purchase-section').style.display = 'none';
+    document.getElementById('sold-state').style.display = 'block';
+    document.getElementById('sold-state').innerHTML = '<p style="color:var(--mid-gray);font-size:13px">This work has been sold.</p>';
+    return;
+  }
   const pend = s === 'pending';
   document.getElementById('btn-transfer').textContent = pend ? 'Join waitlist — bank transfer' : 'Commit — bank transfer';
   document.getElementById('btn-desk').textContent = pend ? 'Join waitlist — pay at desk' : 'Commit — pay at desk';
@@ -422,6 +551,47 @@ async function submitCommit(e) {
   e.target.reset();
   document.getElementById('f-vip').checked = true; // re-check VIP after reset
   btn.disabled=false; btn.textContent='Submit commitment';
+}
+
+async function submitVipOffer(e) {
+  e.preventDefault();
+  const btn = document.getElementById('vip-submit-btn');
+  btn.textContent = 'Submitting…'; btn.disabled = true;
+  const amount = parseFloat(document.getElementById('vip-amount').value);
+  if (!amount || amount <= 0) { btn.textContent = 'Submit offer'; btn.disabled = false; alert('Please enter a valid offer amount.'); return; }
+  const payload = {
+    action: 'submitVipOffer',
+    workId: currentWork.id, workTitle: currentWork.title, artist: currentWork.artist,
+    name: document.getElementById('vip-name').value.trim(),
+    email: document.getElementById('vip-email').value.trim(),
+    phone: document.getElementById('vip-phone').value.trim(),
+    amount,
+  };
+  try {
+    await fetch(SHEET_API_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(payload) });
+    document.getElementById('vip-offer-section').style.display = 'none';
+    document.getElementById('success-state').classList.add('open');
+    document.getElementById('success-body').innerHTML = `Your offer for <strong>${esc(currentWork.title||'this work')}</strong> has been received. The curators will be in touch before the gallery opens.`;
+  } catch(err) { console.error(err); }
+  btn.textContent = 'Submit offer'; btn.disabled = false;
+}
+
+async function verifyVipCode() {
+  const code = document.getElementById('vip-code-input').value.trim().toUpperCase();
+  if (!code) return;
+  try {
+    const res = await fetch(SHEET_API_URL + '?action=verifyVipCode&code=' + encodeURIComponent(code));
+    const data = await res.json();
+    if (data.valid) {
+      isVip = true;
+      document.getElementById('vip-code-section').style.display = 'none';
+      document.getElementById('vip-access-granted').style.display = 'block';
+      renderGrid();
+      if (currentWork) showPurchaseOptions();
+    } else {
+      document.getElementById('vip-code-error').style.display = 'block';
+    }
+  } catch(e) { console.error(e); }
 }
 
 function statusLabel(s) { return s==='sold'?'Sold':s==='pending'?'Pending':'Available'; }
