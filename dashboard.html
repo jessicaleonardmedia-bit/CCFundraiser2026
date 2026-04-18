@@ -168,6 +168,51 @@
   /* PROMOTED INDICATOR on queue item */
   .promoted-badge { font-size: 10px; background: var(--available-bg); color: var(--available); border: 1px solid var(--available); padding: 2px 7px; white-space: nowrap; margin-left: 6px; }
 
+  /* ADMIN PANELS */
+  .admin-panels { padding: 0 24px 12px; display: flex; flex-direction: column; gap: 12px; }
+  .admin-panel { border: 1px solid var(--border); background: var(--white); }
+  .admin-panel-header { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+  .admin-panel-header h3 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mid-gray); }
+  .admin-panel-body { padding: 16px; display: none; }
+  .admin-panel.open .admin-panel-body { display: block; }
+  .admin-panel.open .admin-panel-header { border-bottom: 1px solid var(--border); }
+
+  .mode-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .mode-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 4px 10px; border: 1px solid; }
+  .mode-badge-soft_launch { border-color: var(--pending); color: var(--pending); background: var(--pending-bg); }
+  .mode-badge-live { border-color: var(--available); color: var(--available); background: var(--available-bg); }
+  .mode-badge-closed { border-color: var(--mid-gray); color: var(--mid-gray); background: var(--light-gray); }
+  .mode-btn { font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 12px; border: 1px solid var(--black); background: var(--white); color: var(--black); cursor: pointer; transition: all 0.1s; }
+  .mode-btn:hover { background: var(--light-gray); }
+  .mode-btn-live { border-color: var(--available); color: var(--available); }
+  .mode-btn-live:hover { background: var(--available-bg); }
+  .mode-btn-closed { border-color: var(--danger); color: var(--danger); }
+  .mode-btn-closed:hover { background: var(--danger-bg); }
+  .schedule-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .schedule-row label { font-size: 11px; color: var(--mid-gray); white-space: nowrap; }
+  .schedule-input { border: 1px solid var(--border); background: var(--white); padding: 6px 10px; font-family: var(--font); font-size: 12px; outline: none; flex: 1; min-width: 180px; }
+  .schedule-input:focus { border-color: var(--black); }
+
+  .vip-work-group { margin-bottom: 20px; }
+  .vip-work-group h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mid-gray); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .vip-offer-item { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .vip-offer-item:last-child { border-bottom: none; }
+  .vip-offer-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .vip-offer-contact { font-size: 11px; color: var(--mid-gray); }
+  .vip-offer-amount { font-size: 16px; font-weight: 700; white-space: nowrap; }
+  .vip-offer-status { font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border: 1px solid; white-space: nowrap; }
+  .vip-status-pending { border-color: var(--pending); color: var(--pending); }
+  .vip-status-accepted { border-color: var(--available); color: var(--available); }
+  .vip-status-declined { border-color: var(--mid-gray); color: var(--mid-gray); }
+  .vip-offer-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .vip-btn { font-family: var(--font); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 4px 10px; border: 1px solid; background: var(--white); cursor: pointer; white-space: nowrap; }
+  .vip-btn-accept { border-color: var(--available); color: var(--available); }
+  .vip-btn-accept:hover { background: var(--available-bg); }
+  .vip-btn-decline { border-color: var(--mid-gray); color: var(--mid-gray); }
+  .vip-btn-decline:hover { background: var(--light-gray); }
+  .vip-btn-decline-all { border-color: var(--danger); color: var(--danger); }
+  .vip-btn-decline-all:hover { background: var(--danger-bg); }
+
   @media print {
     .dashboard > *:not(.qr-overlay) { display: none !important; }
     .qr-overlay { position: static; display: block !important; background: none; padding: 0; }
@@ -238,6 +283,44 @@
 
   <div class="timer-warnings" id="timer-warnings"></div>
 
+  <!-- ADMIN PANELS (shown only when logged in as admin) -->
+  <div class="admin-panels" id="admin-panels" style="display:none">
+
+    <!-- Gallery mode control -->
+    <div class="admin-panel" id="panel-mode">
+      <div class="admin-panel-header" onclick="toggleAdminPanel('panel-mode')">
+        <h3>Gallery mode</h3>
+        <span id="mode-badge-header" class="mode-badge mode-badge-soft_launch">Soft launch</span>
+      </div>
+      <div class="admin-panel-body">
+        <div class="mode-row">
+          <button class="mode-btn" onclick="setMode('soft_launch')">Soft launch</button>
+          <button class="mode-btn mode-btn-live" onclick="setMode('live')">Go live</button>
+          <button class="mode-btn mode-btn-closed" onclick="setMode('closed')">Close gallery</button>
+        </div>
+        <div class="schedule-row">
+          <label>Schedule go-live:</label>
+          <input type="datetime-local" class="schedule-input" id="schedule-input">
+          <button class="mode-btn mode-btn-live" onclick="scheduleLaunch()">Schedule</button>
+          <button class="mode-btn" onclick="cancelSchedule()">Cancel schedule</button>
+        </div>
+        <p style="font-size:11px;color:var(--mid-gray);margin-top:10px" id="schedule-status"></p>
+      </div>
+    </div>
+
+    <!-- VIP offers -->
+    <div class="admin-panel" id="panel-vip">
+      <div class="admin-panel-header" onclick="toggleAdminPanel('panel-vip')">
+        <h3>VIP offers</h3>
+        <span id="vip-offer-count" style="font-size:11px;color:var(--mid-gray)">Loading…</span>
+      </div>
+      <div class="admin-panel-body" id="vip-panel-body">
+        <p style="font-size:12px;color:var(--mid-gray)">Loading offers…</p>
+      </div>
+    </div>
+
+  </div>
+
   <div class="work-list" id="work-list">
     <p style="font-size:12px;color:var(--mid-gray);padding:20px 0">Loading works…</p>
   </div>
@@ -290,7 +373,7 @@ const AUTO_REFRESH = 15000;
 // Public gallery base URL — update if your GitHub Pages URL changes
 const GALLERY_URL = 'https://jessicaleonardmedia-bit.github.io/CCFundraiser2026/index.html';
 
-let allWorks = [], refreshTimer = null, pendingAction = null, isAdmin = false, allTimers = [];
+let allWorks = [], refreshTimer = null, pendingAction = null, isAdmin = false, allTimers = [], galleryMode = 'soft_launch', allVipOffers = [];
 
 // ---- AUTH ----
 function attemptLogin() {
@@ -300,7 +383,9 @@ function attemptLogin() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').classList.add('open');
     document.getElementById('role-tag').textContent = isAdmin ? 'Admin' : 'Volunteer';
+    document.getElementById('admin-panels').style.display = isAdmin ? 'flex' : 'none';
     loadWorks();
+    if (isAdmin) { loadVipOffers(); }
     refreshTimer = setInterval(loadWorks, AUTO_REFRESH);
   } else {
     document.getElementById('login-error').style.display = 'block';
@@ -320,12 +405,15 @@ function logout() {
 // ---- DATA ----
 async function loadWorks() {
   try {
-    const res = await fetch(SHEET_API_URL + '?action=getWorksAdmin&pwd=' + encodeURIComponent(VOLUNTEER_PASSWORD));
+    const pwd = isAdmin ? ADMIN_PASSWORD : VOLUNTEER_PASSWORD;
+    const res = await fetch(SHEET_API_URL + '?action=getWorksAdmin&pwd=' + encodeURIComponent(pwd));
     const data = await res.json();
     if (data.works) {
       allWorks = data.works.filter(w => w.id && (w.artist || w.title));
       allTimers = data.timers || [];
-      renderList(); updateStats(); renderTimerWarnings();
+      galleryMode = data.mode || 'soft_launch';
+      renderList(); updateStats(); renderTimerWarnings(); updateModeDisplay();
+      if (isAdmin) loadVipOffers();
       document.getElementById('last-updated').textContent =
         'Updated ' + new Date().toLocaleTimeString('en-AU', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
     }
@@ -337,7 +425,7 @@ async function sendAction(payload) {
     const res = await fetch(SHEET_API_URL, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify({...payload, pwd: VOLUNTEER_PASSWORD}),
+      body: JSON.stringify({...payload, pwd: isAdmin ? ADMIN_PASSWORD : VOLUNTEER_PASSWORD}),
     });
     const data = await res.json();
     if (data.works) {
@@ -608,6 +696,133 @@ async function timerPause(workId, queueTimestamp) {
 
 async function timerUnpause(workId, queueTimestamp) {
   await sendAction({ action: 'unpauseTimer', workId, queueTimestamp });
+}
+
+// ---- GALLERY MODE ----
+function updateModeDisplay() {
+  const labels = { soft_launch: 'Soft launch', live: 'Live', closed: 'Closed' };
+  const el = document.getElementById('mode-badge-header');
+  if (!el) return;
+  el.textContent = labels[galleryMode] || galleryMode;
+  el.className = 'mode-badge mode-badge-' + galleryMode;
+}
+
+async function setMode(mode) {
+  const labels = { soft_launch: 'soft launch', live: 'live', closed: 'closed' };
+  if (!confirm('Set gallery to ' + (labels[mode]||mode) + '?')) return;
+  const res = await fetch(SHEET_API_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'setGalleryMode', mode, pwd: ADMIN_PASSWORD }),
+  });
+  const data = await res.json();
+  if (data.success) { galleryMode = mode; updateModeDisplay(); document.getElementById('schedule-status').textContent = ''; }
+}
+
+async function scheduleLaunch() {
+  const val = document.getElementById('schedule-input').value;
+  if (!val) { alert('Please select a date and time.'); return; }
+  const iso = new Date(val).toISOString();
+  const res = await fetch(SHEET_API_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'scheduleGalleryMode', scheduledTime: iso, mode: 'live', pwd: ADMIN_PASSWORD }),
+  });
+  const data = await res.json();
+  if (data.success) document.getElementById('schedule-status').textContent = 'Scheduled: go live at ' + new Date(val).toLocaleString('en-AU');
+}
+
+async function cancelSchedule() {
+  await fetch(SHEET_API_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'scheduleGalleryMode', scheduledTime: '', mode: 'live', pwd: ADMIN_PASSWORD }),
+  });
+  document.getElementById('schedule-input').value = '';
+  document.getElementById('schedule-status').textContent = 'Schedule cancelled.';
+}
+
+function toggleAdminPanel(id) {
+  document.getElementById(id)?.classList.toggle('open');
+}
+
+// ---- VIP OFFERS ----
+async function loadVipOffers() {
+  try {
+    const res = await fetch(SHEET_API_URL + '?action=getVipOffers&pwd=' + encodeURIComponent(ADMIN_PASSWORD));
+    const data = await res.json();
+    if (data.offers) { allVipOffers = data.offers; renderVipOffers(); }
+  } catch(e) { console.error('VIP offers load failed', e); }
+}
+
+function renderVipOffers() {
+  const pending = allVipOffers.filter(o => o.status === 'pending');
+  const countEl = document.getElementById('vip-offer-count');
+  if (countEl) countEl.textContent = pending.length ? pending.length + ' pending offer' + (pending.length>1?'s':'') : 'No pending offers';
+
+  const body = document.getElementById('vip-panel-body');
+  if (!body) return;
+
+  if (!allVipOffers.length) { body.innerHTML = '<p style="font-size:12px;color:var(--mid-gray)">No VIP offers yet.</p>'; return; }
+
+  // Group by workId
+  const byWork = {};
+  allVipOffers.forEach(o => { if (!byWork[o.workId]) byWork[o.workId] = []; byWork[o.workId].push(o); });
+
+  body.innerHTML = Object.entries(byWork).map(([workId, offers]) => {
+    const work = allWorks.find(w => w.id === workId);
+    const workTitle = work ? (work.artist ? work.artist + ' — ' : '') + work.title : workId;
+    const sorted = [...offers].sort((a,b) => Number(b.amount) - Number(a.amount));
+    const hasPending = sorted.some(o => o.status === 'pending');
+
+    return `<div class="vip-work-group">
+      <h4>${esc(workTitle)} ${hasPending ? '<span class="vip-offer-status vip-status-pending">Has pending offers</span>' : ''}</h4>
+      ${sorted.map((o,i) => `
+        <div class="vip-offer-item">
+          <div>
+            <div class="vip-offer-name">${esc(o.name)} ${i===0&&o.status==='pending'?'<span style="font-size:10px;color:var(--pending)">Highest</span>':''}</div>
+            <div class="vip-offer-contact">${esc(o.email)} · ${esc(o.phone)}</div>
+            ${o.status === 'pending' ? `<div class="vip-offer-actions">
+              <button class="vip-btn vip-btn-accept" onclick="acceptVipOffer('${o.id}','${escA(workId)}','${escA(workTitle)}')">Accept offer</button>
+              <button class="vip-btn vip-btn-decline" onclick="declineVipOffer('${o.id}','${escA(workId)}','${escA(workTitle)}')">Decline</button>
+            </div>` : ''}
+          </div>
+          <div class="vip-offer-amount">$${Number(o.amount).toLocaleString()}</div>
+          <div><span class="vip-offer-status vip-status-${o.status}">${o.status}</span></div>
+        </div>`).join('')}
+      ${hasPending ? `<div style="margin-top:10px"><button class="vip-btn vip-btn-decline-all" onclick="declineAllVipOffers('${escA(workId)}','${escA(workTitle)}')">Decline all offers for this work</button></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function acceptVipOffer(offerId, workId, workTitle) {
+  if (!confirm('Accept this offer? All other offers for this work will be declined.')) return;
+  const res = await fetch(SHEET_API_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'acceptVipOffer', offerId, workId, workTitle, pwd: ADMIN_PASSWORD }),
+  });
+  const data = await res.json();
+  if (data.works) { allWorks = data.works.filter(w => w.id && (w.artist || w.title)); renderList(); updateStats(); }
+  if (data.offers) { allVipOffers = data.offers; renderVipOffers(); }
+}
+
+async function declineVipOffer(offerId, workId, workTitle) {
+  if (!confirm('Decline this offer?')) return;
+  const res = await fetch(SHEET_API_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'declineVipOffer', offerId, workId, workTitle, pwd: ADMIN_PASSWORD }),
+  });
+  const data = await res.json();
+  if (data.offers) { allVipOffers = data.offers; renderVipOffers(); }
+  if (data.works) { allWorks = data.works.filter(w => w.id && (w.artist || w.title)); renderList(); updateStats(); }
+}
+
+async function declineAllVipOffers(workId, workTitle) {
+  if (!confirm('Decline ALL pending offers for ' + workTitle + '? The work will go back to available.')) return;
+  const res = await fetch(SHEET_API_URL, {
+    method: 'POST', headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ action: 'declineAllVipOffers', workId, workTitle, pwd: ADMIN_PASSWORD }),
+  });
+  const data = await res.json();
+  if (data.offers) { allVipOffers = data.offers; renderVipOffers(); }
+  if (data.works) { allWorks = data.works.filter(w => w.id && (w.artist || w.title)); renderList(); updateStats(); }
 }
 
 // ---- HELPERS ----
